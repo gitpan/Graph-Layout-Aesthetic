@@ -244,6 +244,11 @@ None.
 L<Graph>,
 L<Graph::Layout::Aesthetic>
 
+=head1 BUGS
+
+Not threadsafe. Different object may have method calls going on at the same 
+time, but any specific object should only have at most one call active.
+
 =head1 AUTHOR
 
 Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.be<gt>

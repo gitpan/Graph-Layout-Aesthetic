@@ -32,11 +32,13 @@ for (qw(Graph::Directed Graph::Undirected)) {
     print "You don't seem to have the optional '$_' package. Not fatal.\n";
 }
 
+my $me = $$;
 my $MIN_VERSION = 3.7;
 {
     my $program = "gnuplot";
     my ($rd, $wr);
     local *ERR;
+    my $fail = "Nothing to see here, process $me. move along";
     if (defined(my $pid = eval { open3($wr , $rd, \*ERR, $program) })) {
         print $wr "show version\n";
         close($wr);
@@ -49,12 +51,14 @@ my $MIN_VERSION = 3.7;
             next;
         }
     }
+    # Sigh. open3 can in principle croak on the exec and get caught by the eval
+    exit if $me != $$;
     print "You don't seem to have the optional '$program' program. Not fatal.\n";
 }
 
 WriteMakefile
     (NAME		=> 'Graph::Layout::Aesthetic',
-     VERSION		=> '0.02',
+     VERSION		=> '0.03',
      PERL_MALLOC_OK	=> 1,
      PREREQ_PM		=> {
          "Test::More"		=> 0.11,	# For the tests only

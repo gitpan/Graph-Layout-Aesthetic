@@ -3,15 +3,25 @@ Revision history for Perl extension Graph::Layout::Aesthetic.
 TODO:
 	- tests for gloss.pl
         - Make the forces into subpackages
+	- For gloss_graph maybe allow to get the number of dimensions
+	  from a graph attribute, or from the pos/hold attribute size
+	  if array references or the already existing coordinates if hold is
+	  a string. Not sure if this is a good idea.
 
-0.02  Wed Sep 29
+0.03  2004-09-29
+	- gnuplot test failed if user doesn't have gnuplot.
+        - Fix potential coredump when destroying forces during a gradient call
+          (and added a test for it)
+        - Document that the aglo and topology object are not threadsafe.
+
+0.02  2004-09-29
 	- Changed the default attributes to have a layout_ prefix to be
 	  more compatible with Graph::Layouter
 	- set frame coordinates as attributes on a graph if requested
 	- Mention Graph::Layouter and Graph::Renderer in the docs
 	- Added a $VERSION to a few forgotten modules
-0.01  Wed Sep 29
+
+0.01  2004-09-29
         - Lots of programming and testing.
 	- original version; created by h2xs 1.23 with options
 		-A -n Graph::Layout::Aesthetic
-

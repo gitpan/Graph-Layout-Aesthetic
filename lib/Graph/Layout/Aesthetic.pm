@@ -6,7 +6,7 @@ use Carp;
 
 use Graph::Layout::Aesthetic::Force;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 require XSLoader;
 XSLoader::load('Graph::Layout::Aesthetic', $VERSION);
@@ -79,13 +79,13 @@ sub pause {
 sub coordinates_to_graph {
     my ($aglo, $graph, %params) = @_;
 
-    my $pos = exists $params{pos_attribute} ? 
+    my $pos = exists $params{pos_attribute} ?
         delete $params{pos_attribute} : "layout_pos";
 
-    my $min_attr = exists $params{min_attribute} ? 
+    my $min_attr = exists $params{min_attribute} ?
         delete $params{min_attribute} : "layout_min";
 
-    my $max_attr = exists $params{max_attribute} ? 
+    my $max_attr = exists $params{max_attribute} ?
         delete $params{max_attribute} : "layout_max";
 
     my $name = delete $params{id_attribute};
@@ -276,8 +276,8 @@ acceptable layout is reached. This is done by considering the current state
 from the point of view of a number of aesthetic criteria, each of which will
 provide a a step along which it would like to change the current state. A
 weighted average is then taken of all these steps, leading to a proposed step.
-The size of this step is then limited using a decreasing parameter (the 
-temperature) and applied. Small random disturbances may also be applied to 
+The size of this step is then limited using a decreasing parameter (the
+temperature) and applied. Small random disturbances may also be applied to
 avoid getting stuck in a subspace.
 
 The package also comes with a simple commandline tool L<gloss.pl|gloss.pl(1)>
@@ -669,9 +669,9 @@ this call.
 
 =item X<coordinates_to_graph>$aglo->coordinates_to_graph($graph, %parameters)
 
-Copies the current state coordinates of $aglo to vertex attributes of the 
+Copies the current state coordinates of $aglo to vertex attributes of the
 standard L<Graph|Graph> object $graph. It also stores
-L<the containing frame|"frame"> as graph attributes.
+L<the containing frame|"frame"> as global graph attributes.
 
 %parameters are key/value pairs. Recognized are:
 
@@ -681,8 +681,8 @@ L<the containing frame|"frame"> as graph attributes.
 
 $name is the the graph vertices attribute that for each vertex identifies the
 corresponding vertex in L<$aglo->topology|"topology">, and defaults to
-C<"layout_id">. It may also be a hash reference, in which case node ids are 
-looked up in the hash instead of as atrributes in the graph. So this argument 
+C<"layout_id">. It may also be a hash reference, in which case node ids are
+looked up in the hash instead of as atrributes in the graph. So this argument
 is compatible with the
 L<id_attribute parameter|Graph::Layout::Aesthetic::Topology/from_graph_attribute>
 of the
@@ -691,53 +691,53 @@ L<Graph::Layout::Aesthetic::Topology from_graph method|Graph::Layout::Aesthetic:
 =item X<coordinates_to_graph_pos_attribute>pos_attribute => $name
 
 $name is the graph vertices attribute that will be used to set the
-coordinates and defaults to C<"layout_pos"> if not given at all. 
+coordinates and defaults to C<"layout_pos"> if not given at all.
 
 If $name is undef, no vertex attribute will be set.
 
-If $name is a plain string, it will set an attribute with this name on each 
+If $name is a plain string, it will set an attribute with this name on each
 vertex. The value will be an array reference to the coordinates of that vertex.
 
 If $name is an array of names (size equal to the
-L<number of dimensions of the layout space|"nr_dimensions">), then for each 
-vertex it will set an attribute for each element in $name whose value will be 
-the corresponding coordinate component. So if for example you want your $graph 
-nodes to have an attribute C<"layout_pos1"> for the first coordinate and 
-C<"layout_pos2"> for the second (this is what 
-L<Graph::Layouter|Graph::Layouter> uses and 
+L<number of dimensions of the layout space|"nr_dimensions">), then for each
+vertex it will set an attribute for each element in $name whose value will be
+the corresponding coordinate component. So if for example you want your $graph
+nodes to have an attribute C<"layout_pos1"> for the first coordinate and
+C<"layout_pos2"> for the second (this is what
+L<Graph::Layouter|Graph::Layouter> uses and
 L<Graph::Renderer|Graph::Renderer> expects) you could use:
 
-  $aglo->coordinates_to_graph($graph, 
+  $aglo->coordinates_to_graph($graph,
                               pos_attribute => ["layout_pos1", "layout_pos2"]);
   # And now you can get the second coordinate of vertex foo by doing:
   my $y = $graph->get_attribute("layout_pos2", "foo");
 
 =item X<coordinates_to_graph_min_attribute>min_attribute => $name
 
-$name is the graph attribute that will be used to set the minimum coordinates
-for the frame containing all poins (see L<the frame method|"frame"> and 
-defaults to C<"layout_min"> if not given at all. 
+$name is the global graph attribute that will be used to set the minimum
+coordinates for the frame containing all poins (see L<the frame method|"frame">
+and defaults to C<"layout_min"> if not given at all.
 
 Like L<pos_attribute|"coordinates_to_graph_pos_attribute"> you can give it
 an undef value (attribute will not be set), a string (one attribute will be
-set) or an array reference (an attribute will be set for each string in the 
+set) or an array reference (an attribute will be set for each string in the
 array).
 
 =item X<coordinates_to_graph_max_attribute>max_attribute => $name
 
-$name is the graph attribute that will be used to set the maximum coordinates
-for the frame containing all poins (see L<the frame method|"frame"> and 
-defaults to C<"layout_max"> if not given at all. 
+$name is the global graph attribute that will be used to set the maximum
+coordinates for the frame containing all poins (see L<the frame method|"frame">
+and defaults to C<"layout_max"> if not given at all.
 
 Like L<pos_attribute|"coordinates_to_graph_pos_attribute"> you can give it
 an undef value (attribute will not be set), a string (one attribute will be
-set) or an array reference (an attribute will be set for each string in the 
+set) or an array reference (an attribute will be set for each string in the
 array).
 
-So for complete compatibility with L<Graph::Layouter|Graph::Layouter> and 
+So for complete compatibility with L<Graph::Layouter|Graph::Layouter> and
 L<Graph::Renderer|Graph::Renderer> you can use:
 
-  $aglo->coordinates_to_graph($graph, 
+  $aglo->coordinates_to_graph($graph,
                               pos_attribute => ["layout_pos1", "layout_pos2"],
                               min_attribute => ["layout_min1", "layout_min2"],
                               max_attribute => ["layout_max1", "layout_max2"]);
@@ -866,6 +866,13 @@ L<Graph>,
 L<Graph::Layouter>,
 L<Graph::Renderer>,
 L<GraphViz>
+
+=head1 BUGS
+
+Not threadsafe. Different object may have method calls going on at the same 
+time, but any specific object should only have at most one call active.
+Notice that all forces coming with this package are threadsafe, so it's ok
+if your different objects use the same forces at the same time.
 
 =head1 AUTHOR
 

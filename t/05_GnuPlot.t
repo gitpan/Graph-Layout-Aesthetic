@@ -6,6 +6,7 @@ use strict;
 use warnings;
 BEGIN { $^W = 1 };
 use Test::More "no_plan";
+use POSIX qw(_exit);
 
 my @warnings;
 $SIG{__WARN__} = sub { push @warnings, shift };
@@ -217,9 +218,19 @@ ok(@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot,
    "There is a default gnuplot binary name");
 my ($rd, $wr);
 local *ERR;
+my $me = $$;
+my $fail = "Nothing to see here, process $me. move along";
 my $pid = eval {
     open3($wr,$rd,\*ERR,@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot);
 };
+if ($$ != $me) {
+    # Child croaked and was caught by eval. Evil. Kill it.
+    # diag("Survivor killed");
+    select(STDERR);
+    $|=1;
+    print $fail;
+    _exit 0;
+}
 if (!defined($pid)) {
     if ($@) {
         $@ =~ s/^\s*open3:\s+//;
@@ -235,6 +246,10 @@ print $wr "show version\nplot \"-\"\n1\ne\n";
 close($wr) || die "Error writing to gnuplot pipe: $!";
 defined(my $out = do { local $/; my $out = <ERR>; close ERR; $out }) ||
     die "No output from 'show version' to @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot";
+if ($out =~ /\Q$fail/) {
+    diag("Can't start @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot. Tests skipped");
+    exit;
+}
 $out =~ /Version\s+(\d+\.\d+)\s+/ ||
     die "No recognized version string in $out";
 my $version = $1;

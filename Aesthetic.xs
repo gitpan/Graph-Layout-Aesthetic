@@ -151,18 +151,20 @@ static void limit_displacement(aglo_state state, aglo_real temperature) {
 
 static void calculate_aesth_forces(aglo_state state) {
     aglo_unsigned i, j, gradient_size;
-    use_force force;
+    use_force force, old_base;
     aglo_gradient gradient	 = state->gradient;
     aglo_gradient force_gradient = state->force_gradient;
 
     gradient_size = state->graph->vertices * state->dimensions;
     zero_gradient(gradient, gradient_size);
 
-    for (force = state->forces; force; force = force->next) {
+    for (force = old_base = state->forces; force; force = force->next) {
         zero_gradient(force_gradient, gradient_size);
         force->force->aesth_gradient(state, force_gradient, force->private);
         for (i=0;i<gradient_size;i++)
             gradient[i] += force_gradient[i] * force->weight;
+        /* Check if someone called clear_forces */
+        if (state->forces != old_base) break;
     }
 }
 
@@ -1050,7 +1052,6 @@ clear_forces(aglo_state state)
         here = state->forces;
         /* Keep datastructure valid in case the cleanup call dies */
         state->forces = here->next;
-
         cleanup = here->force->aesth_cleanup;
         private = here->private;
         sv_2mortal(here->force_sv);

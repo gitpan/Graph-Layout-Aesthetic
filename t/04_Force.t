@@ -231,6 +231,32 @@ my $bad_count = 124;
 }
 
 {
+    package Graph::Layout::Aesthetic::Force::GradientClear;
+    our @ISA = qw(Graph::Layout::Aesthetic::Force::Perl);
+
+    sub DESTROY {
+        $destroys++;
+        shift->SUPER::DESTROY(@_);
+    }
+
+    sub setup {
+        my $canary = Canary->new;
+        $balanced++;
+        return $canary;
+    }
+
+    sub gradient {
+        # Try to shoot away the force from under us
+        $_[1]->clear_forces;
+        return @$gradient;
+    }
+
+    sub cleanup {
+        $balanced--;
+    }
+}
+
+{
     package Graph::Layout::Aesthetic::Force::NoGradient;
     our @ISA = qw(Graph::Layout::Aesthetic::Force::Perl);
 
@@ -650,6 +676,26 @@ $aglo->zero;
 eval { $aglo->step(100, 0) };
 like($@, qr!^Can.t locate object method "gradient" via package "Graph::Layout::Aesthetic::Force::NoGradient" at !, "gradient failure gets passed on");
 is($destroys, 0, "Force still alive");
+is($aglo_destroys, 0, "Aglo is still alive");
+$aglo = undef;
+is($aglo_destroys, 1, "Aglo is gone");
+is($destroys, 1, "Force gone");
+
+# Force suicide
+$aglo_destroys = 0;
+$aglo = Graph::Layout::Aesthetic->new($topo2);
+$destroys = 0;
+$force = Graph::Layout::Aesthetic::Force::GradientClear->new;
+$aglo->_add_force($force);
+$aglo->_add_force($force);
+# Don't destroy $force here. There seems to be more chance of problems if
+# it's kept around
+is($destroys, 0, "Force still alive");
+$aglo->zero;
+$aglo->step(100, 0);
+is($destroys, 0, "Force still alive");
+$force = undef;
+is($destroys, 1, "Force is gone");
 is($aglo_destroys, 0, "Aglo is still alive");
 $aglo = undef;
 is($aglo_destroys, 1, "Aglo is gone");
