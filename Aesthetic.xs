@@ -164,7 +164,10 @@ static void calculate_aesth_forces(aglo_state state) {
         for (i=0;i<gradient_size;i++)
             gradient[i] += force_gradient[i] * force->weight;
         /* Check if someone called clear_forces */
-        if (state->forces != old_base) break;
+        if (state->forces != old_base) {
+            warn("Forces were cleared during an actual forcing calculation");
+            break;
+        }
     }
 }
 

@@ -692,7 +692,11 @@ $aglo->_add_force($force);
 # it's kept around
 is($destroys, 0, "Force still alive");
 $aglo->zero;
+check_warnings;
 $aglo->step(100, 0);
+is(@warnings, 1);
+like($warnings[0], qr!^Forces were cleared during an actual forcing calculation at !, "Proper warning if you clear forces during a gradient call");
+@warnings = ();
 is($destroys, 0, "Force still alive");
 $force = undef;
 is($destroys, 1, "Force is gone");

@@ -251,7 +251,7 @@ time, but any specific object should only have at most one call active.
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.be<gt>
+Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.bE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

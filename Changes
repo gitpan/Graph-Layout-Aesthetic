@@ -8,6 +8,11 @@ TODO:
 	  if array references or the already existing coordinates if hold is
 	  a string. Not sure if this is a good idea.
 
+0.04  2004-09-30
+        - Warn in case of a clear_forces during a gradient call.
+	- The gnuplot tests still seem to fail for the solaris cpan tester.
+          Stop using the IPC::Open3 hacks and try hacks involving ``
+
 0.03  2004-09-29
 	- gnuplot test failed if user doesn't have gnuplot.
         - Fix potential coredump when destroying forces during a gradient call

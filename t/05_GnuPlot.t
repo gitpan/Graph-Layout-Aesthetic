@@ -6,7 +6,6 @@ use strict;
 use warnings;
 BEGIN { $^W = 1 };
 use Test::More "no_plan";
-use POSIX qw(_exit);
 
 my @warnings;
 $SIG{__WARN__} = sub { push @warnings, shift };
@@ -26,7 +25,6 @@ END {
 my $MIN_VERSION = 3.7;
 $ENV{SHELL} = "/bin/false";
 
-use IPC::Open3;
 use File::Temp;
 
 BEGIN { use_ok('Graph::Layout::Aesthetic::Monitor::GnuPlot') };
@@ -216,37 +214,10 @@ e
 
 ok(@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot,
    "There is a default gnuplot binary name");
-my ($rd, $wr);
-local *ERR;
-my $me = $$;
-my $fail = "Nothing to see here, process $me. move along";
-my $pid = eval {
-    open3($wr,$rd,\*ERR,@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot);
-};
-if ($$ != $me) {
-    # Child croaked and was caught by eval. Evil. Kill it.
-    # diag("Survivor killed");
-    select(STDERR);
-    $|=1;
-    print $fail;
-    _exit 0;
-}
-if (!defined($pid)) {
-    if ($@) {
-        $@ =~ s/^\s*open3:\s+//;
-        chomp $@;
-        diag("Can't start @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot: $@. Tests skipped");
-    } else {
-        diag("pid is undef but no exception. This should be impossible");
-        fail("Situation too weird");
-    }
-    exit;
-}
-print $wr "show version\nplot \"-\"\n1\ne\n";
-close($wr) || die "Error writing to gnuplot pipe: $!";
-defined(my $out = do { local $/; my $out = <ERR>; close ERR; $out }) ||
-    die "No output from 'show version' to @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot";
-if ($out =~ /\Q$fail/) {
+seek(DATA,0,1);	# Solaris needs this
+open(STDIN, "<&DATA") || die "Could not dup DATA to STDIN: $!";
+my $out = `@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot 2>&1`;
+if ($? || $out eq "") {
     diag("Can't start @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot. Tests skipped");
     exit;
 }
@@ -279,3 +250,8 @@ $monitor->command_flush("pause 1");
 $aglo->gloss(monitor => $monitor, monitor_delay => 0);
 $monitor->command_flush("pause 1");
 $monitor = undef;
+__DATA__
+show version
+plot "-"
+1
+e

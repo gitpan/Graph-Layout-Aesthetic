@@ -6,7 +6,7 @@ use Carp;
 
 use Graph::Layout::Aesthetic::Force;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 require XSLoader;
 XSLoader::load('Graph::Layout::Aesthetic', $VERSION);
@@ -603,7 +603,8 @@ and like this if it's an object:
 
     $monitor->plot($aglo);
 
-You can use this to monitor the layout progress.
+You can use this to monitor (and optionally L<pause|"pause"> the layout 
+progress.
 
 The default is no monitoring.
 
@@ -680,7 +681,7 @@ L<the containing frame|"frame"> as global graph attributes.
 =item X<coordinates_to_graph_id_attribute>id_attribute => $name
 
 $name is the the graph vertices attribute that for each vertex identifies the
-corresponding vertex in L<$aglo->topology|"topology">, and defaults to
+corresponding vertex in L<$aglo-E<gt>topology|"topology">, and defaults to
 C<"layout_id">. It may also be a hash reference, in which case node ids are
 looked up in the hash instead of as atrributes in the graph. So this argument
 is compatible with the
@@ -748,8 +749,8 @@ L<Graph::Renderer|Graph::Renderer> you can use:
 
 This call combines
 L<the Graph::Layout::Aesthetic::Topology from_graph method|Graph::Layout::Aesthetic::Topology/from_graph>,
-L<gloss|"gloss"> and L<coordinates_to_graph|"coordinates_to_graph"> effectively
-giving a one call layout of a standard L<Graph|Graph> object.
+L<gloss|"gloss"> and L<coordinates_to_graph|"coordinates_to_graph">, 
+effectively giving a one call layout of a standard L<Graph|Graph> object.
 
 The parameters are key/value pairs and correspond to the ones from the above
 mentioned methods:
@@ -877,7 +878,7 @@ if your different objects use the same forces at the same time.
 =head1 AUTHOR
 
 Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt> for the perl code
-and the xs wrappers.
+and the L<XS|perlxs> wrappers.
 
 Much of the C code is equal to or derived from the original code by
 D. Stott Parker.
@@ -887,8 +888,8 @@ D. Stott Parker.
 Much of the C code is copyrighted by D. Stott Parker, who released it under
 the GNU GENERAL PUBLIC LICENSE (version 1).
 
-Copyright (C) 2004 by Ton Hospel for the perl code and the xs wrappers.
-To be compatible with the original license these pieces are also under the
-GNU GENERAL PUBLIC LICENSE.
+Copyright (C) 2004 by Ton Hospel for the perl code and the L<XS|perlxs> 
+wrappers. To be compatible with the original license these pieces are also 
+under the GNU GENERAL PUBLIC LICENSE.
 
 =cut

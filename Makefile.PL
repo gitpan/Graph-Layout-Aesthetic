@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 use Config qw(%Config);
-use IPC::Open3;
 
 # Allows to suppress all program installation with -n (library only)
 use Getopt::Std;
@@ -32,33 +31,21 @@ for (qw(Graph::Directed Graph::Undirected)) {
     print "You don't seem to have the optional '$_' package. Not fatal.\n";
 }
 
-my $me = $$;
 my $MIN_VERSION = 3.7;
-{
-    my $program = "gnuplot";
-    my ($rd, $wr);
-    local *ERR;
-    my $fail = "Nothing to see here, process $me. move along";
-    if (defined(my $pid = eval { open3($wr , $rd, \*ERR, $program) })) {
-        print $wr "show version\n";
-        close($wr);
-        my $out = do { local $/; my $out = <ERR>; close ERR; $out || "" };
-        if ($out =~ /Version\s+(\d+\.\d+)\s+/) {
-            my $version = $1;
-            if ($version < $MIN_VERSION) {
-                print("You have $program version $version, but I wanted at least $MIN_VERSION. Not fatal\n");
-            }
-            next;
-        }
-    }
-    # Sigh. open3 can in principle croak on the exec and get caught by the eval
-    exit if $me != $$;
-    print "You don't seem to have the optional '$program' program. Not fatal.\n";
+my $program = "gnuplot";
+seek(DATA,0,1);	# Solaris needs this
+open(STDIN, "<&DATA") || die "Could not dup DATA to STDIN: $!";
+my $out = `$program 2>&1`;
+if ($? || $out eq "") {
+    print "You don't seem to have the optional '$program' program. Not fatal\n";
+} elsif ($out =~ /Version\s+(\d+\.\d+)\s+/) {
+    my $version = $1;
+    print "You have $program version $version, but I wanted at least $MIN_VERSION. Not fatal\n" if $version < $MIN_VERSION;
 }
 
 WriteMakefile
     (NAME		=> 'Graph::Layout::Aesthetic',
-     VERSION		=> '0.03',
+     VERSION		=> '0.04',
      PERL_MALLOC_OK	=> 1,
      PREREQ_PM		=> {
          "Test::More"		=> 0.11,	# For the tests only
@@ -81,3 +68,7 @@ WriteMakefile
      OBJECT		=> q/$(O_FILES)/,
      EXE_FILES		=> \@programs_to_install,
      );
+
+# For gnuplot
+__DATA__
+show version

@@ -207,7 +207,7 @@ L<gnuplot(1)>
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.be<gt>
+Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
