@@ -90,6 +90,8 @@ my $balanced = 0;
         main::isa_ok(shift, "Graph::Layout::Aesthetic", 
                      "Second arg is the state");
         main::isa_ok(shift, "Canary", "Third arg is the canary");
+        # check if forced void return works
+        return 9;
     }
 
     sub gradient {
@@ -104,6 +106,8 @@ my $balanced = 0;
         $canaries +=2;
         $_[2] = bless [bless([1, 2], "Canary"), [3, 4]], "Canary";
         $canaries +=2;
+        # check if forced void return works
+        return 8;
     }
 }
 
@@ -119,6 +123,7 @@ my $gradient;
 
     sub setup {
         $balanced++;
+        # Checks forced scalar return
         return;
     }
 

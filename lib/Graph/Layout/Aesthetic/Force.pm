@@ -88,40 +88,40 @@ number of predefined aesthetics, these being:
 
 =over
 
-=item L<Graph::Layout::Aesthetic::Force::Centripetal>
+=item L<Graph::Layout::Aesthetic::Force::Centripetal|Graph::Layout::Aesthetic::Force::Centripetal>
 
 Repulsion from the centroid of the current configuration, magnitude 1/d
 
-=item L<Graph::Layout::Aesthetic::Force::MinEdgeLength>
+=item L<Graph::Layout::Aesthetic::Force::MinEdgeLength|Graph::Layout::Aesthetic::Force::MinEdgeLength>
 
 Nodes connected to each other by an edge attract each other with force d**2
 
-=item L<Graph::Layout::Aesthetic::Force::NodeRepulsion>
+=item L<Graph::Layout::Aesthetic::Force::NodeRepulsion|Graph::Layout::Aesthetic::Force::NodeRepulsion>
 
 Nodes repel each other with a force 1/d
 
-=item L<Graph::Layout::Aesthetic::Force::NodeEdgeRepulsion>
+=item L<Graph::Layout::Aesthetic::Force::NodeEdgeRepulsion|Graph::Layout::Aesthetic::Force::NodeEdgeRepulsion>
 
 Nodes repel from the nearest point on the line through an edge
 if that point is between the endpoints of the edge. Magnitude 1/d.
 
-=item L<Graph::Layout::Aesthetic::Force::MinEdgeIntersect>
+=item L<Graph::Layout::Aesthetic::Force::MinEdgeIntersect|Graph::Layout::Aesthetic::Force::MinEdgeIntersect>
 
 Crossed edge midpoints repel each other with a constant magnitude of 1.
 Only works in 2 dimensions.
 
-=item L<Graph::Layout::Aesthetic::Force::MinEdgeIntersect2>
+=item L<Graph::Layout::Aesthetic::Force::MinEdgeIntersect2|Graph::Layout::Aesthetic::Force::MinEdgeIntersect2>
 
 Crossed edge midpoints repel each other with a force d.
 Only works in 2 dimensions.
 
-=item L<Graph::Layout::Aesthetic::Force::ParentLeft>
+=item L<Graph::Layout::Aesthetic::Force::ParentLeft|Graph::Layout::Aesthetic::Force::ParentLeft>
 
 This is mainly meant for DAGs (Directed Acyclic Graphs). If a node
 gets placed to the left of it's parent (position on the first coordinate, the
 x-axis) plus 5, it wants to move to the other side with a force d**2.
 
-=item L<Graph::Layout::Aesthetic::Force::MinLevelVariance>
+=item L<Graph::Layout::Aesthetic::Force::MinLevelVariance|Graph::Layout::Aesthetic::Force::MinLevelVariance>
 
 This is again mainly meant for DAGs (Directed Acyclic Graphs). Each node gets
 assigned a level (its distance from the leafs). Then it tries to give all nodes

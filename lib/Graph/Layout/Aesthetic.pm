@@ -6,7 +6,7 @@ use Carp;
 
 use Graph::Layout::Aesthetic::Force;
 
-our $VERSION = '0.06';
+our $VERSION = "0.07";
 
 require XSLoader;
 XSLoader::load('Graph::Layout::Aesthetic', $VERSION);
@@ -606,7 +606,7 @@ and like this if it's an object:
 
     $monitor->plot($aglo);
 
-You can use this to monitor (and optionally L<pause|"pause"> the layout 
+You can use this to monitor (and optionally L<pause|"pause">) the layout
 progress.
 
 The default is no monitoring.
@@ -752,7 +752,7 @@ L<Graph::Renderer|Graph::Renderer> you can use:
 
 This call combines
 L<the Graph::Layout::Aesthetic::Topology from_graph method|Graph::Layout::Aesthetic::Topology/from_graph>,
-L<gloss|"gloss"> and L<coordinates_to_graph|"coordinates_to_graph">, 
+L<gloss|"gloss"> and L<coordinates_to_graph|"coordinates_to_graph">,
 effectively giving a one call layout of a standard L<Graph|Graph> object.
 
 The parameters are key/value pairs and correspond to the ones from the above
@@ -873,7 +873,7 @@ L<GraphViz>
 
 =head1 BUGS
 
-Not threadsafe. Different object may have method calls going on at the same 
+Not threadsafe. Different object may have method calls going on at the same
 time, but any specific object should only have at most one call active.
 Notice that all forces coming with this package are threadsafe, so it's ok
 if your different objects use the same forces at the same time.
@@ -891,8 +891,8 @@ D. Stott Parker.
 Much of the C code is copyrighted by D. Stott Parker, who released it under
 the GNU GENERAL PUBLIC LICENSE (version 1).
 
-Copyright (C) 2004 by Ton Hospel for the perl code and the L<XS|perlxs> 
-wrappers. To be compatible with the original license these pieces are also 
+Copyright (C) 2004 by Ton Hospel for the perl code and the L<XS|perlxs>
+wrappers. To be compatible with the original license these pieces are also
 under the GNU GENERAL PUBLIC LICENSE.
 
 =cut

@@ -54,8 +54,8 @@ WriteMakefile
       (AUTHOR		=> 'Ton Hospel <Graph::Layout::Aesthetic@ton.iguana.be>') : ()),
      depend => {
          # Evil hack, probably unportable
-         'lib/Graph/Layout/Aesthetic/Include.pm' => '$(H_FILES) typemap gen_include
-	$(FULLPERL) gen_include $@ $^'
+         'lib/Graph/Layout/Aesthetic/Include.pm' => 'Makefile.PL gen_include $(H_FILES) typemap
+	$(FULLPERL) gen_include lib/Graph/Layout/Aesthetic/Include.pm $(H_FILES) typemap'
      },
      # OPTIMIZE		=> "-g",
      LIBS		=> [''], # e.g., '-lm'

@@ -7,15 +7,23 @@ TODO:
 	  from a graph attribute, or from the pos/hold attribute size
 	  if array references or the already existing coordinates if hold is
 	  a string. Not sure if this is a good idea.
+        - Add magic tests (works at all, no extra uneeded accesses)
 
-0.06 2004-10-01
+0.07  2004-11-06
+	- Make user_data and _private data into lvalue subs.
+	- Added some get magic.
+	- Simplified the gen_include makerule so hopefully nmake can now 
+          handle it.
+
+0.06  2004-10-01
 	- Forgot to document Graph::Layout::Aesthetic::Force::MinEdgeLength.
-        - Forgot to update the NAME entry of the different forces
+        - Forgot to update the NAME entry of the different forces.
 	- Graph::Layout::Aesthetic::Force::Perl gradient was documented wrong.
 	- Other minor docs updates.
-	- Have "layout" as an alias for gloss_graph (not documented yet)
-	- Allow to drop the first argument (class) to gloss_graph so you can
-          also use it as a function (not documented yet).
+	- Have "layout" as an alias for gloss_graph 
+          (not documented/tested yet)
+	- Allow to drop the first argument (class) to gloss_graph/layout so 
+	  you can also use it as a function (not documented/tested yet).
 
 0.05  2004-10-01
 	- The gnuplot tests still failed for the solaris cpan tester, but at 

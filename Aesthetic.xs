@@ -346,11 +346,8 @@ MODULE = Graph::Layout::Aesthetic		PACKAGE = Graph::Layout::Aesthetic::Force
 void
 user_data(aglo_force force, SV *new_user_data=0)
   PPCODE:
-    if (GIMME_V != G_VOID) {
-        EXTEND(SP, 1);
-        PUSHs(force->user_data ?
-              sv_mortalcopy(force->user_data) : &PL_sv_undef);
-    }
+    if (GIMME_V != G_VOID)
+        XPUSHs(force->user_data ? force->user_data : &PL_sv_undef);
     if (new_user_data) {
         if (force->user_data) sv_2mortal(force->user_data);
         force->user_data = newSVsv(new_user_data);
@@ -359,11 +356,8 @@ user_data(aglo_force force, SV *new_user_data=0)
 void
 _private_data(aglo_force force, SV *new_private_data=0)
   PPCODE:
-    if (GIMME_V != G_VOID) {
-        EXTEND(SP, 1);
-        PUSHs(force->private_data ?
-              sv_mortalcopy(force->private_data) : &PL_sv_undef);
-    }
+    if (GIMME_V != G_VOID) 
+        XPUSHs(force->private_data ? force->private_data : &PL_sv_undef);
     if (new_private_data) {
         if (force->private_data) sv_2mortal(force->private_data);
         force->private_data = newSVsv(new_private_data);
@@ -435,10 +429,7 @@ new_state(char *class, SV *topology, aglo_signed nr_dimensions=2)
 void
 paused(aglo_state state, aglo_boolean new_paused=0)
   PPCODE:
-    if (GIMME_V != G_VOID) {
-        EXTEND(SP, 1);
-        PUSHs(state->paused ? &PL_sv_yes : &PL_sv_no);
-    }
+    if (GIMME_V != G_VOID) XPUSHs(state->paused ? &PL_sv_yes : &PL_sv_no);
     if (items > 1) state->paused = new_paused;
 
 aglo_unsigned
@@ -511,6 +502,7 @@ coordinates(aglo_state state, aglo_vertex vertex, ...)
     /* next see if there are arguments */
     if (items > 2) {
         state->sequence++;
+        SvGETMAGIC(ST(2));
         if (items == 3 && SvROK(ST(2))) {
             AV *av = (AV*) SvRV(ST(2));
             if (SvTYPE(av) != SVt_PVAV)
@@ -583,6 +575,7 @@ all_coordinates(aglo_state state, ...)
         if (items == 2) {
             AV *av;
             /* Must be ref ref */
+            SvGETMAGIC(ST(1));
             if (!SvROK(ST(1)))
                 croak("First coordinate is not a reference");
             av = (AV*) SvRV(ST(1));
@@ -603,6 +596,7 @@ all_coordinates(aglo_state state, ...)
                 sp = av_fetch(av, 0, 0);
                 if (!sp) croak("Vertex 0 is unset");
                 s = *sp;
+                SvGETMAGIC(s);
                 if (SvROK(s)) {
                     coords = (AV*) SvRV(s);
                     if (SvTYPE(coords) != SVt_PVAV)
@@ -613,7 +607,6 @@ all_coordinates(aglo_state state, ...)
                     if (!sp) croak("Vertex 0, coordinate 0 is unset");
                     s = *sp;
                 }
-                /* if (SvGMAGICAL(s)) mg_get(s); */
                 state->point[0][0] = (aglo_real) SvNV(s);
             } else {
                 for (i=0; i<v; i++) {
@@ -622,6 +615,7 @@ all_coordinates(aglo_state state, ...)
                     sp = av_fetch(av, i, 0);
                     if (!sp) croak("Vertex %"UVuf" is unset", (UV) i);
                     s = *sp;
+                    SvGETMAGIC(s);
                     if (!SvROK(s))
                         croak("Vertex %"UVuf" is not a reference", (UV) i);
                     coords = (AV*) SvRV(s);
@@ -635,7 +629,6 @@ all_coordinates(aglo_state state, ...)
                         if (!sv) croak("Vertex %"UVuf", coordinate %"UVuf" is unset",
                                        (UV) i, (UV) j);
                         s = *sv;
-                        /* if (SvGMAGICAL(s)) mg_get(s); */
                         p[j] = (aglo_real) SvNV(s);
                     }
                 }
@@ -644,6 +637,7 @@ all_coordinates(aglo_state state, ...)
             if (items-1 != v)
                 croak("Expected %"UVuf" coordinate references (number of vertices), but got %"UVuf, (UV) v, (UV) (items-1));
             for (i=0; i<v; i++) {
+                SvGETMAGIC(ST(i+1));
                 if (!SvROK(ST(i+1))) croak("Vertex %"UVuf" is not a reference", (UV) i);
                 coords = (AV*) SvRV(ST(i+1));
                 if (SvTYPE(coords) != SVt_PVAV)
@@ -657,7 +651,6 @@ all_coordinates(aglo_state state, ...)
                     if (!sv) croak("Vertex %"UVuf", coordinate %"UVuf" is unset",
                                    (UV) i, (UV) j);
                     s = *sv;
-                    /* if (SvGMAGICAL(s)) mg_get(s); */
                     p[j] = (aglo_real) SvNV(s);
                 }
             }
@@ -1017,29 +1010,33 @@ DESTROY(SV *state)
     } else croak("State is not of type Graph::Layout::Aesthetic");
 
     warned = 0;
+    ENTER;
+    EXTEND(SP, 1);
     while (st->forces) {
-        int count;
+        I32 count;
         here = st->forces;
-        ENTER;
         SAVETMPS;
 
         PUSHMARK(SP);
-        EXTEND(SP, 1);
         PUSHs(sv_2mortal(newRV(state)));
         PUTBACK ;
 
         /* This is an infinite loop if clear_forces makes no progress.
            So be it, it will indicate a bug anyways, and it's better than 
            leaking memory */
-        count = call_method("clear_forces", G_EVAL|G_KEEPERR|G_VOID|G_DISCARD);
-        if (count) croak("Forced void context call succeeded in returning %d values. This is impossible", count);
+        count = call_method("clear_forces", G_EVAL|G_KEEPERR|G_VOID);
+        SPAGAIN;
+        if (count) {
+            if (count < 0) croak("Forced void context call 'clear_forces' succeeded in returning %d values. This is impossible", (int) count);
+            SP -= count;
+        }
         FREETMPS;
-        LEAVE;
         if (here == st->forces && !warned) {
             warned = 1;
             warn("clear_forces is making no progress during DESTROY");
         }
     }
+    LEAVE;
     sv_2mortal(st->graph_sv);
     Safefree(st->point[0]);
     Safefree(st);

@@ -18,7 +18,7 @@ declare_aesth(perl);
 
 define_setup(perl) {
     private private;
-    int count;
+    I32 count;
     SV *f, *s;
     IV tmp;
     dSP;
@@ -46,10 +46,9 @@ define_setup(perl) {
     sv_2mortal(SvREFCNT_inc(state_sv));
     sv_2mortal(SvREFCNT_inc(force_sv));
     count = call_method("setup", G_SCALAR);
+    if (count != 1) croak("Forced scalar context call succeeded in returning %d values. This is impossible", (int) count);
 
     SPAGAIN;
-
-    if (count != 1) croak("Forced scalar context call succeeded in returning %d values. This is impossible", count);
 
     Newc(__LINE__, private, sizeof(struct private) + (2*state->dimensions-1) * sizeof(aglo_real), char, struct private);
     private->closure  = SvREFCNT_inc(POPs);
@@ -64,7 +63,7 @@ define_setup(perl) {
 }
 
 define_cleanup(perl) {
-    int count;
+    I32 count;
     SV *f = PRIVATE->force_sv;
     SV *s = PRIVATE->state_sv;
     SV *c = PRIVATE->closure;
@@ -82,16 +81,21 @@ define_cleanup(perl) {
     PUSHs(sv_2mortal(c));
     PUTBACK;
 
-    count = call_method("cleanup", G_DISCARD | G_VOID);
+    count = call_method("cleanup", G_VOID);
+    if (count) {
+        if (count < 0) croak("Forced void context call of 'cleanup' succeeded in returning %d values. This is impossible", (int) count);
+        SPAGAIN;
+        SP -= count;
+        PUTBACK;
+    }
 
     FREETMPS;
     LEAVE;
-    if (count) croak("Forced void context call succeeded in returning %d values. This is impossible", count);
     return;
 }
 
 define_aesth(perl) {
-    int count;
+    I32 count;
     aglo_vertex j, v;
     aglo_unsigned i, d;
     AV *gav, *av;
@@ -123,8 +127,13 @@ define_aesth(perl) {
     PUSHs(PRIVATE->closure);
     PUTBACK;
 
-    count = call_method("gradient", G_DISCARD | G_VOID);
-    if (count) croak("Forced void context call succeeded in returning %d values. This is impossible", count);
+    count = call_method("gradient", G_VOID);
+    if (count) {
+        if (count < 0) croak("Forced void context call of 'gradient' succeeded in returning %d values. This is impossible", (int) count);
+        SPAGAIN;
+        SP -= count;
+        PUTBACK;
+    }
 
     if (!SvROK(gradient_sv))
         croak("Gradient is not a reference anymore");
@@ -142,6 +151,7 @@ define_aesth(perl) {
         sp = av_fetch(gav, --v, 0);
         if (!sp) croak("Gradient for vertex %"UVuf" is unset", (UV) v);
         sv = *sp;
+        SvGETMAGIC(sv);
         if (!SvOK(sv)) 
             croak("Gradient for vertex %"UVuf" is undefined", (UV) v);
         if (!SvROK(sv))
