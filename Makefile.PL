@@ -14,7 +14,7 @@ my @programs_to_install;
 unless ($opt_n) {
     print <<EOT
 
-This package comes with a sample programs that I can try
+This package comes with a sample program that I can try
 to install in $Config{installscript}.
 
    Note that you can avoid this question by passing
@@ -33,19 +33,19 @@ for (qw(Graph::Directed Graph::Undirected)) {
 
 my $MIN_VERSION = 3.7;
 my $program = "gnuplot";
-seek(DATA,0,1);	# Solaris needs this
+seek(DATA,0,1);	# Old perls needs this
 open(STDIN, "<&DATA") || die "Could not dup DATA to STDIN: $!";
 my $out = `$program 2>&1`;
 if ($? || $out eq "") {
     print "You don't seem to have the optional '$program' program. Not fatal\n";
-} elsif ($out =~ /Version\s+(\d+\.\d+)\s+/) {
+} elsif ($out =~ /\bVersion\s+(\d+\.\d+)\b/i) {
     my $version = $1;
     print "You have $program version $version, but I wanted at least $MIN_VERSION. Not fatal\n" if $version < $MIN_VERSION;
 }
 
 WriteMakefile
     (NAME		=> 'Graph::Layout::Aesthetic',
-     VERSION		=> '0.04',
+     VERSION_FROM	=> 'lib/Graph/Layout/Aesthetic.pm',
      PERL_MALLOC_OK	=> 1,
      PREREQ_PM		=> {
          "Test::More"		=> 0.11,	# For the tests only

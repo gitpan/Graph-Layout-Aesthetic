@@ -214,14 +214,14 @@ e
 
 ok(@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot,
    "There is a default gnuplot binary name");
-seek(DATA,0,1);	# Solaris needs this
+seek(DATA,0,1);	# Old perls needs this
 open(STDIN, "<&DATA") || die "Could not dup DATA to STDIN: $!";
 my $out = `@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot 2>&1`;
 if ($? || $out eq "") {
     diag("Can't start @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot. Tests skipped");
     exit;
 }
-$out =~ /Version\s+(\d+\.\d+)\s+/ ||
+$out =~ /\bVersion\s+(\d+\.\d+)\b/i ||
     die "No recognized version string in $out";
 my $version = $1;
 if ($version < $MIN_VERSION) {
