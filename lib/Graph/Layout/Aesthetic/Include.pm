@@ -5,6 +5,7 @@ use warnings;
 use Carp;
 use File::Path qw(mkpath);
 
+our $VERSION = '0.01';
 our %includes;
 
 sub list {

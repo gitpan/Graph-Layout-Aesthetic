@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
+our $VERSION = '0.01';
 our @CARP_NOT = qw(package Graph::Layout::Aesthetic);
 
 our @gnu_plot = qw(gnuplot -geometry 600x700-1+1);

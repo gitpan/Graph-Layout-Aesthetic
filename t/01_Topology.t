@@ -100,7 +100,7 @@ if ($has_directed) {
         ($g, id_attribute => undef);
     is($t->finished, 1, "Finished");
     check_topology($t);
-    is($g->get_attribute("aglo", "foo0"), undef, 
+    is($g->get_attribute("layout_id", "foo0"), undef, 
        "No accidental set of default name");
     $destroys = 0;
     $t = undef;
@@ -117,7 +117,7 @@ if ($has_directed) {
         my $i = $_;
         $i =~ s/foo//;
         is ($g->get_attribute("index", $_), $i);
-        is ($g->get_attribute("aglo", $_), undef);
+        is ($g->get_attribute("layout_id", $_), undef);
         $v++;
     }
     is($v, $t->nr_vertices,
@@ -128,7 +128,7 @@ if ($has_directed) {
 
     for ($g->vertices) {
         $g->delete_attribute("index", $_);
-        $g->delete_attribute("aglo", $_);
+        $g->delete_attribute("layout_id", $_);
     }
     $t = Graph::Layout::Aesthetic::Topology->from_graph($g, literal => 1);
     is($t->finished, 1, "Finished");
@@ -137,7 +137,7 @@ if ($has_directed) {
     for ($g->vertices) {
         my $i = $_;
         $i =~ s/foo//;
-        is ($g->get_attribute("aglo", $_), $i);
+        is ($g->get_attribute("layout_id", $_), $i);
         is ($g->get_attribute("index", $_), undef);
         $v++;
     }
@@ -149,7 +149,7 @@ if ($has_directed) {
 
     for ($g->vertices) {
         $g->delete_attribute("index", $_);
-        $g->delete_attribute("aglo", $_);
+        $g->delete_attribute("layout_id", $_);
     }
     $t = Graph::Layout::Aesthetic::Topology->from_graph($g);
     is($t->finished, 1, "Finished");
@@ -157,7 +157,7 @@ if ($has_directed) {
     for ($g->vertices) {
         my $i = $_;
         $i =~ s/foo//;
-        is ($g->get_attribute("aglo", $_), $i);
+        is ($g->get_attribute("layout_id", $_), $i);
         is ($g->get_attribute("index", $_), undef);
         $v++;
     }
@@ -169,7 +169,7 @@ if ($has_directed) {
 
     for ($g->vertices) {
         $g->delete_attribute("index", $_);
-        $g->delete_attribute("aglo",  $_);
+        $g->delete_attribute("layout_id",  $_);
     }
     my %attr = ("foo0" => 18, "a" => 36);
     $t = Graph::Layout::Aesthetic::Topology->from_graph
@@ -180,7 +180,7 @@ if ($has_directed) {
     for ($g->vertices) {
         my $i = $_;
         $i =~ s/foo//;
-        is ($g->get_attribute("aglo", $_),  undef);
+        is ($g->get_attribute("layout_id", $_),  undef);
         is ($g->get_attribute("index", $_), undef);
         is($attr{$_}, $i);
         $v++;
@@ -195,7 +195,7 @@ if ($has_directed) {
     %attr = ("foo0" => 18, "a" => 36);
     for ($g->vertices) {
         $g->delete_attribute("index", $_);
-        $g->delete_attribute("aglo",  $_);
+        $g->delete_attribute("layout_id",  $_);
     }
     $t = Graph::Layout::Aesthetic::Topology->from_graph
         ($g, id_attribute => \%attr);
@@ -204,7 +204,7 @@ if ($has_directed) {
     for ($g->vertices) {
         my $i = $_;
         $i =~ s/foo//;
-        is ($g->get_attribute("aglo",  $_), undef);
+        is ($g->get_attribute("layout_id",  $_), undef);
         is ($g->get_attribute("index", $_), undef);
         is($attr{$_}, $i);
         $v++;

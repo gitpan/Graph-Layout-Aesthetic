@@ -7,14 +7,14 @@ use Carp;
 # We need this to load our xs code
 use Graph::Layout::Aesthetic;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub from_graph {
     my ($class, $graph, %params) = @_;
 
     my $literal   = delete $params{literal};
-    my $attribute = 
-        exists $params{id_attribute} ? delete $params{id_attribute} : "aglo";
+    my $attribute = exists $params{id_attribute} ? 
+        delete $params{id_attribute} : "layout_id";
 
     croak "Unknown parameter ", join(", ", keys %params) if %params;
 
@@ -146,7 +146,7 @@ You can give key/value pairs as options. Currently supported are:
 =item X<from_graph_attribute>id_attribute => $name
 
 If you don't give this attribute, it will behave as if you gave it the string
-C<"aglo"> (the same default as for the 
+C<"layout_id"> (the same default as for the 
 L<Graph::Layout::Aesthetic coordinates_to_graph method|Graph::Layout::Aesthetic/coordinates_to_graph method>).
 
 If you give this attribute an undefined value, it will do no tracking

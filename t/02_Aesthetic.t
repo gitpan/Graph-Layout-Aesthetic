@@ -188,7 +188,7 @@ sub g_is_random {
         $f->($g);
         my $i=0;
         for ($g->vertices) {
-            my $pos = $g->get_attribute("pos", $_);
+            my $pos = $g->get_attribute("layout_pos", $_);
             for (@$pos) {
                 $_ *= $mul * $size;
                 if ($_ <= -$size || $_ >= $size) {
@@ -999,18 +999,27 @@ if ($graph_class) {
     $g->set_attribute("index", "foo2", 0);
     $g->set_attribute("index", "foo3", 1);
 
-    is($g->get_attribute("foo", "foo0"), undef);
+    ok(!$g->has_attribute("foo", "foo0"));
+    ok(!$g->has_attribute("bar"));
+    ok(!$g->has_attribute("baz"));
     $aglo->coordinates_to_graph($g,
                                 pos_attribute => "foo",
+                                min_attribute => "bar",
+                                max_attribute => "baz",
                                 id_attribute  => "index");
     is_deeply($g->get_attribute("foo", "foo0"), [7, 8]);
     is_deeply($g->get_attribute("foo", "foo1"), [5, 6]);
     is_deeply($g->get_attribute("foo", "foo2"), [1, 2]);
     is_deeply($g->get_attribute("foo", "foo3"), [3, 4]);
+    is_deeply($g->get_attribute("bar"), [1, 2]);
+    is_deeply($g->get_attribute("baz"), [7, 8]);
 
-    is($g->get_attribute("x", "foo0"), undef);
+    ok(!$g->get_attribute("x", "foo0"));
+    ok(!$g->get_attribute($_)) for qw(i j k l);
     $aglo->coordinates_to_graph($g,
                                 pos_attribute => ["x", "y"],
+                                min_attribute => ["i", "j"],
+                                max_attribute => ["k", "l"],
                                 id_attribute => "index");
     is($g->get_attribute("x", "foo0"), 7);
     is($g->get_attribute("y", "foo0"), 8);
@@ -1020,60 +1029,71 @@ if ($graph_class) {
     is($g->get_attribute("y", "foo2"), 2);
     is($g->get_attribute("x", "foo3"), 3);
     is($g->get_attribute("y", "foo3"), 4);
+    is($g->get_attribute("i"), 1);
+    is($g->get_attribute("j"), 2);
+    is($g->get_attribute("k"), 7);
+    is($g->get_attribute("l"), 8);
 
     eval { $aglo->coordinates_to_graph($g,
                                        pos_attribute => ["x", "y"],
                                        id_attribute  => "zoem") };
     like($@, qr!^Vertex 'foo\d' has no 'zoem' attribute at !);
     eval { $aglo->coordinates_to_graph($g,
-                                       pos_attribute => "pos",
+                                       pos_attribute => "layout_pos",
                                        id_attribute  => "zoem") };
     like($@, qr!^Vertex 'foo\d' has no 'zoem' attribute at !);
-    eval { $aglo->coordinates_to_graph($g, pos_attribute => "pos") };
-    like($@, qr!^Vertex 'foo\d' has no 'aglo' attribute at !,
+    eval { $aglo->coordinates_to_graph($g, pos_attribute => "layout_pos") };
+    like($@, qr!^Vertex 'foo\d' has no 'layout_id' attribute at !,
          "Default id attribute is aglo");
     eval { $aglo->coordinates_to_graph($g,
-                                       pos_attribute => "pos",
+                                       pos_attribute => "layout_pos",
                                        id_attribute  => undef) };
-    like($@, qr!^Vertex 'foo\d' has no 'aglo' attribute at !,
-         "Default id attribute is aglo");
+    like($@, qr!^Vertex 'foo\d' has no 'layout_id' attribute at !,
+         "Default id attribute is layout_id");
     eval { $aglo->coordinates_to_graph($g,
-                                       grmbl => "pos") };
+                                       grmbl => "layout_pos") };
     like($@, qr!^Unknown parameter grmbl at !,
          "Attributes get properly checked");
 
-    $g->set_attribute("aglo", "foo0", 3);
-    $g->set_attribute("aglo", "foo1", 2);
-    $g->set_attribute("aglo", "foo2", 1);
-    $g->set_attribute("aglo", "foo3", 0);
+    $g->set_attribute("layout_id", "foo0", 3);
+    $g->set_attribute("layout_id", "foo1", 2);
+    $g->set_attribute("layout_id", "foo2", 1);
+    $g->set_attribute("layout_id", "foo3", 0);
     $aglo->coordinates_to_graph($g, pos_attribute => "foo");
     is_deeply($g->get_attribute("foo", "foo0"), [7, 8]);
     is_deeply($g->get_attribute("foo", "foo1"), [5, 6]);
     is_deeply($g->get_attribute("foo", "foo2"), [3, 4]);
     is_deeply($g->get_attribute("foo", "foo3"), [1, 2]);
 
-    is($g->get_attribute("pos", "foo0"), undef);
+    ok(!$g->has_attribute("layout_pos", "foo0"));
+    $g->delete_attribute("layout_min");
+    $g->delete_attribute("layout_max");
     $aglo->coordinates_to_graph($g);
-    is_deeply($g->get_attribute("pos", "foo0"), [7, 8]);
-    is_deeply($g->get_attribute("pos", "foo1"), [5, 6]);
-    is_deeply($g->get_attribute("pos", "foo2"), [3, 4]);
-    is_deeply($g->get_attribute("pos", "foo3"), [1, 2]);
+    is_deeply($g->get_attribute("layout_pos", "foo0"), [7, 8]);
+    is_deeply($g->get_attribute("layout_pos", "foo1"), [5, 6]);
+    is_deeply($g->get_attribute("layout_pos", "foo2"), [3, 4]);
+    is_deeply($g->get_attribute("layout_pos", "foo3"), [1, 2]);
+    is_deeply($g->get_attribute("layout_min"), [1, 2]);
+    is_deeply($g->get_attribute("layout_max"), [7, 8]);
 
     for my $v ($g->vertices) {
-        $g->delete_attribute($_, $v) for qw(pos foo x y index aglo);
+        $g->delete_attribute($_, $v) for 
+            qw(layout_pos foo x y index layout_id);
     }
+    $g->delete_attribute($_) for qw(layout_min layout_max i j k l);
     my %attr = (foo0 => 2, foo1 => 3, foo2 => 1, foo3 => 0);
-    is($g->get_attribute("pos", "foo0"), undef);
+    ok(!$g->has_attribute("layout_pos", "foo0"));
     $aglo->coordinates_to_graph($g,
                                 pos_attribute => undef,
+                                min_attribute => undef,
+                                max_attribute => undef,
                                 id_attribute  => \%attr);
-    is_deeply($g->get_attribute("pos", "foo0"), [5, 6]);
-    is_deeply($g->get_attribute("pos", "foo1"), [7, 8]);
-    is_deeply($g->get_attribute("pos", "foo2"), [3, 4]);
-    is_deeply($g->get_attribute("pos", "foo3"), [1, 2]);
+    ok(!$g->has_attribute("layout_pos", "foo0"));
+    ok(!$g->has_attribute("layout_min"));
+    ok(!$g->has_attribute("layout_max"));
 
     %attr = (foo0 => 2, foo1 => 3, foo2 => 0, foo3 => 1);
-    is($g->get_attribute("x1", "foo0"), undef);
+    ok(!$g->has_attribute("x1", "foo0"));
     $aglo->coordinates_to_graph($g,
                                 pos_attribute => ["x1", "x2"],
                                 id_attribute  => \%attr);
@@ -1085,9 +1105,23 @@ if ($graph_class) {
     is($g->get_attribute("x2", "foo2"), 2);
     is($g->get_attribute("x1", "foo3"), 3);
     is($g->get_attribute("x2", "foo3"), 4);
+    is_deeply($g->get_attribute("layout_min"), [1, 2]);
+    is_deeply($g->get_attribute("layout_max"), [7, 8]);
 
-    eval { $aglo->coordinates_to_graph($g, pos_attribute => [4]) };
+    eval { $aglo->coordinates_to_graph($g, 
+                                       pos_attribute => [4],
+                                       id_attribute  => \%attr) };
     like($@, qr!^Number of entries in the position attribute array must be equal to the number of dimensions at !,
+         "Proper dimensionalitry check on attribute");
+    eval { $aglo->coordinates_to_graph($g, 
+                                       min_attribute => [4],
+                                       id_attribute  => \%attr) };
+    like($@, qr!^Number of entries in the minimum attribute array must be equal to the number of dimensions at !,
+         "Proper dimensionalitry check on attribute");
+    eval { $aglo->coordinates_to_graph($g, 
+                                       max_attribute => [4],
+                                       id_attribute  => \%attr) };
+    like($@, qr!^Number of entries in the maximum attribute array must be equal to the number of dimensions at !,
          "Proper dimensionalitry check on attribute");
 
     # Check gloss_graph
@@ -1110,16 +1144,15 @@ if ($graph_class) {
     eval { Graph::Layout::Aesthetic->gloss_graph($g,
                                                  forces => {},
                                                  hold => 1) };
-    like($@,
-         qr!^Attribute 'pos' for vertex 'foo\d' is not an array reference at !,
-         "Copy attempt from pos if hold is 1");
+    like($@, qr!^Attribute 'layout_pos' for vertex 'foo\d' is not an array reference at !,
+         "Copy attempt from layout_pos if hold is 1");
     eval { Graph::Layout::Aesthetic->gloss_graph($g,
                                                  forces => {},
                                                  pos_attribute => "yyy",
                                                  hold => 1) };
     like($@,
          qr!^Attribute 'yyy' for vertex 'foo\d' is not an array reference at !,
-         "Copy attempt from pos if hold is 1");
+         "Copy attempt from layout_pos if hold is 1");
 
     eval { Graph::Layout::Aesthetic->gloss_graph($g,
                                                  forces => {},
@@ -1127,44 +1160,64 @@ if ($graph_class) {
                                                  hold => 1) };
     like($@,
          qr!^Attribute 'x' for vertex 'foo\d' doesn.t exist at !,
-         "Copy attempt from pos if hold is 1");
+         "Copy attempt from layout_pos if hold is 1");
 
-    ok(!$g->has_attribute("foo0", "pos"), "No pos attribute yet");
+    ok(!$g->has_attribute("foo0", "layout_pos"), 
+       "No layout_pos attribute yet");
+    ok(!$g->has_attribute("layout_min"), "No layout_min attribute yet");
+    ok(!$g->has_attribute("layout_max"), "No layout_max attribute yet");
     Graph::Layout::Aesthetic->gloss_graph($g, forces => {}, iterations => 1);
-    ok($g->has_attribute("pos", "foo0"), "Pos attribute now");
-    is(@{$g->get_attribute("pos", "foo0")}, 2, "Default 2 dimensions");
+    ok($g->has_attribute("layout_pos", "foo0"), "Pos attribute now");
+    is(@{$g->get_attribute("layout_pos", "foo0")}, 2, "Default 2 dimensions");
+    ok($g->has_attribute("layout_min"), "Min attribute now");
+    is(@{$g->get_attribute("layout_min")}, 2, "Default 2 dimensions");
+    ok($g->has_attribute("layout_max"), "Max attribute now");
+    is(@{$g->get_attribute("layout_max")}, 2, "Default 2 dimensions");
     Graph::Layout::Aesthetic->gloss_graph($g, 
                                           forces => {}, 
                                           iterations => 1,
                                           nr_dimensions => 3);
-    is(@{$g->get_attribute("pos", "foo0")}, 3, 
+    is(@{$g->get_attribute("layout_pos", "foo0")}, 3, 
        "Three dimensions if requested");
+    is(@{$g->get_attribute("layout_min")}, 3, "Three dimensions if requested");
+    is(@{$g->get_attribute("layout_max")}, 3, "Three dimensions if requested");
 
     # At 0 iterations gloss_graph should behave like init_gloss
-    $g->set_attribute("pos", "foo0", [2, 2]);
+    $g->set_attribute("layout_pos", "foo0", [2, 2]);
+    $g->set_attribute("layout_min", [3, 3]);
+    $g->set_attribute("layout_max", [4, 4]);
     Graph::Layout::Aesthetic->gloss_graph($g,
                                           forces => {}, 
                                           iterations => 0);
-    my $pos = $g->get_attribute("pos", "foo0");
-    ok(-1 < $pos->[0]);
-    ok($pos->[0] < 1);
-    ok(-1 < $pos->[1]);
-    ok($pos->[1] < 1);
+    for my $pos ($g->get_attribute("layout_pos", "foo0"),
+                 $g->get_attribute("layout_min"),
+                 $g->get_attribute("layout_max")) {
+        ok(-1 < $pos->[0]);
+        ok($pos->[0] < 1);
+        ok(-1 < $pos->[1]);
+        ok($pos->[1] < 1);
+    }
 
-    $g->set_attribute("pos", "foo0", [2, 3]);
+    $g->set_attribute("layout_pos", "foo0", [2, 3]);
+    $g->set_attribute("layout_min", "abba");
+    $g->set_attribute("layout_max", {z => 4});
     Graph::Layout::Aesthetic->gloss_graph($g,
                                           forces => {}, 
                                           iterations => 0,
-                                          hold => 1);
-    is_deeply($g->get_attribute("pos", "foo0"), [2, 3]);
+                                          hold => 1,
+                                          min_attribute => undef,
+                                          max_attribute => undef);
+    is_deeply($g->get_attribute("layout_pos", "foo0"), [2, 3]);
+    is($g->get_attribute("layout_min"), "abba");
+    is_deeply($g->get_attribute("layout_max"), {z => 4});
 
-    $g->set_attribute("pos", "foo0", [4, 5]);
+    $g->set_attribute("layout_pos", "foo0", [4, 5]);
     ok(!$g->has_attribute("www", "foo0"), "No www attribute yet");
     Graph::Layout::Aesthetic->gloss_graph($g,
                                           forces => {}, 
                                           iterations => 0,
                                           pos_attribute => "www",
-                                          hold => "pos");
+                                          hold => "layout_pos");
     is_deeply($g->get_attribute("www", "foo0"), [4, 5]);
 
     g_is_random($g, sub {
@@ -1178,8 +1231,8 @@ if ($graph_class) {
                                               min_edge_length => 1,
                                               node_repulsion  => 1,
                                           });
-    $coords[0] = $g->get_attribute("pos", "foo0");
-    $coords[1] = $g->get_attribute("pos", "foo1");
+    $coords[0] = $g->get_attribute("layout_pos", "foo0");
+    $coords[1] = $g->get_attribute("layout_pos", "foo1");
     $distance = sqrt(($coords[0][0]-$coords[1][0])**2 +
                      ($coords[0][1]-$coords[1][1])**2);
     {
@@ -1196,8 +1249,8 @@ if ($graph_class) {
                                           monitor => sub { $count++},
                                           monitor_delay => 0);
     is($count, 1001, "Default number of iterations");
-    $coords[0] = $g->get_attribute("pos", "foo0");
-    $coords[1] = $g->get_attribute("pos", "foo1");
+    $coords[0] = $g->get_attribute("layout_pos", "foo0");
+    $coords[1] = $g->get_attribute("layout_pos", "foo1");
     $distance = sqrt(($coords[0][0]-$coords[1][0])**2 +
                      ($coords[0][1]-$coords[1][1])**2);
     {
@@ -1214,8 +1267,8 @@ if ($graph_class) {
                                                   min_edge_length => 1,
                                                   parent_left     => 1,
                                               });
-        $coords[0] = $g->get_attribute("pos", "foo0");
-        $coords[1] = $g->get_attribute("pos", "foo1");
+        $coords[0] = $g->get_attribute("layout_pos", "foo0");
+        $coords[1] = $g->get_attribute("layout_pos", "foo1");
         $distance = sqrt(($coords[0][0]-$coords[1][0])**2 +
                          ($coords[0][1]-$coords[1][1])**2);
         {
@@ -1228,8 +1281,8 @@ if ($graph_class) {
                                                   min_edge_length => 1,
                                                   parent_left     => 1,
                                               });
-        $coords[0] = $g->get_attribute("pos", "foo0");
-        $coords[1] = $g->get_attribute("pos", "foo1");
+        $coords[0] = $g->get_attribute("layout_pos", "foo0");
+        $coords[1] = $g->get_attribute("layout_pos", "foo1");
         $distance = sqrt(($coords[0][0]-$coords[1][0])**2 +
                          ($coords[0][1]-$coords[1][1])**2);
         {
@@ -1246,8 +1299,8 @@ if ($graph_class) {
                                                   min_edge_length => 1,
                                                   parent_left     => 1,
                                               });
-        $coords[0] = $g->get_attribute("pos", "foo0");
-        $coords[1] = $g->get_attribute("pos", "foo1");
+        $coords[0] = $g->get_attribute("layout_pos", "foo0");
+        $coords[1] = $g->get_attribute("layout_pos", "foo1");
         $distance = sqrt(($coords[0][0]-$coords[1][0])**2 +
                          ($coords[0][1]-$coords[1][1])**2);
         {
@@ -1260,8 +1313,8 @@ if ($graph_class) {
                                                   min_edge_length => 1,
                                                   parent_left     => 1,
                                               });
-        $coords[0] = $g->get_attribute("pos", "foo0");
-        $coords[1] = $g->get_attribute("pos", "foo1");
+        $coords[0] = $g->get_attribute("layout_pos", "foo0");
+        $coords[1] = $g->get_attribute("layout_pos", "foo1");
         $distance = sqrt(($coords[0][0]-$coords[1][0])**2 +
                          ($coords[0][1]-$coords[1][1])**2);
         {

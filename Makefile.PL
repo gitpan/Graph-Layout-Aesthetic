@@ -54,7 +54,7 @@ my $MIN_VERSION = 3.7;
 
 WriteMakefile
     (NAME		=> 'Graph::Layout::Aesthetic',
-     VERSION		=> '0.01',
+     VERSION		=> '0.02',
      PERL_MALLOC_OK	=> 1,
      PREREQ_PM		=> {
          "Test::More"		=> 0.11,	# For the tests only

@@ -4,6 +4,12 @@ TODO:
 	- tests for gloss.pl
         - Make the forces into subpackages
 
+0.02  Wed Sep 29
+	- Changed the default attributes to have a layout_ prefix to be
+	  more compatible with Graph::Layouter
+	- set frame coordinates as attributes on a graph if requested
+	- Mention Graph::Layouter and Graph::Renderer in the docs
+	- Added a $VERSION to a few forgotten modules
 0.01  Wed Sep 29
         - Lots of programming and testing.
 	- original version; created by h2xs 1.23 with options
