@@ -3,7 +3,7 @@ use 5.006001;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use base qw(Graph::Layout::Aesthetic::Force);
 
 __PACKAGE__->new->register;
@@ -13,7 +13,7 @@ __END__
 
 =head1 NAME
 
-Graph::Layout::Aesthetic::Force::ParentLeft - nodes repel each other
+Graph::Layout::Aesthetic::Force::ParentLeft - Try to place parents to the left of their children
 
 =head1 SYNOPSIS
 
@@ -27,9 +27,9 @@ This module provides an aesthetic force for use by the
 L<Graph::Layout::Aesthetic package|Graph::Layout::Aesthetic>. It's normally
 implicitly loaded by using L<add_force|Graph::Layout::Aesthetic/add_force>.
 
-The aesthetic force is that it tries to place parent nodes at least 5 to the 
-left of child nodes. If nodes are placed so that this condition is not 
-fulfilled, the nodes try to move left or right so it will be with a force 
+The aesthetic force is that it tries to place parent nodes at least 5 to the
+left of child nodes. If nodes are placed so that this condition is not
+fulfilled, the nodes try to move left or right so it will be with a force
 that's quadratic in how much their distance on the x-axis is wrong.
 
 =head1 METHODS
@@ -59,7 +59,7 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.6.1 or,
 at your option, any later version of Perl 5 you may have available.
 
-Much of the underlying XS code is derived from C code copyrighted by
+Much of the underlying L<XS|perlxs> code is derived from C code copyrighted by
 D. Stott Parker, who released it under the GNU GENERAL PUBLIC LICENSE
 (version 1).
 

@@ -8,7 +8,16 @@ TODO:
 	  if array references or the already existing coordinates if hold is
 	  a string. Not sure if this is a good idea.
 
-0.05  2004-09-31
+0.06 2004-10-01
+	- Forgot to document Graph::Layout::Aesthetic::Force::MinEdgeLength.
+        - Forgot to update the NAME entry of the different forces
+	- Graph::Layout::Aesthetic::Force::Perl gradient was documented wrong.
+	- Other minor docs updates.
+	- Have "layout" as an alias for gloss_graph (not documented yet)
+	- Allow to drop the first argument (class) to gloss_graph so you can
+          also use it as a function (not documented yet).
+
+0.05  2004-10-01
 	- The gnuplot tests still failed for the solaris cpan tester, but at 
           least it gets close now.
 

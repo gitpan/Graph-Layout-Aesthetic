@@ -316,7 +316,8 @@ Graph::Layout::Aesthetic::Include - Include files that were used to build Graph:
 
 =head1 SYNOPSIS
 
-  # This module is normally used as base class for particular force modules:
+  # This module is normally used in the Makefile.PL for new packages in
+  # the Graph::Layout::Aesthetic group.
   use Graph::Layout::Aesthetic::Includes;
   @list = Graph::Layout::Aesthetic::Include::list;
   Graph::Layout::Aesthetic::Include::write_file($name);
@@ -326,8 +327,9 @@ Graph::Layout::Aesthetic::Include - Include files that were used to build Graph:
 
 This modules contains the include files and typemap that were used to compile
 Graph::Layout::Aesthetic. It's not supposed to be used in user program, but
-is meant for people writing new derived classes (in particualr new
-L<Graph::Layout::Aesthetic::Force|Graph::Layout::Aesthetic::Force> classes).
+is meant for people writing new Graph::Layout::Aesthetic L<XS|perlxs> packages
+(in particualr new 
+L<Graph::Layout::Aesthetic::Force|Graph::Layout::Aesthetic::Force> packages).
 These people will need to compile C-code and link with the existing libraries,
 which means they should use the same assumptions about data structures as the
 original code.
@@ -362,7 +364,7 @@ Writes out all files available in this module. Basically equal to:
 
 =head1 EXPORT
 
-None by default.
+None.
 
 =head1 SEE ALSO
 

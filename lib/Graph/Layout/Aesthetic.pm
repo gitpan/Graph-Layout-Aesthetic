@@ -6,7 +6,7 @@ use Carp;
 
 use Graph::Layout::Aesthetic::Force;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 require XSLoader;
 XSLoader::load('Graph::Layout::Aesthetic', $VERSION);
@@ -137,7 +137,8 @@ sub coordinates_to_graph {
 }
 
 sub gloss_graph {
-    my ($class, $graph, %params) = @_;
+    my $class = $_[0]->isa(__PACKAGE__) ? shift : __PACKAGE__;
+    my ($graph, %params) = @_;
 
     my $literal = delete $params{literal};
 
@@ -185,6 +186,8 @@ sub gloss_graph {
                                 pos_attribute => $pos,
                                 @to_graph_params);
 }
+
+*layout = \&gloss_graph;
 
 1;
 __END__
@@ -274,7 +277,7 @@ A Graph::Layout::Aesthetic object represents a state in the process of laying
 out a graph. The idea is that the state is repeatedly modified until an
 acceptable layout is reached. This is done by considering the current state
 from the point of view of a number of aesthetic criteria, each of which will
-provide a a step along which it would like to change the current state. A
+provide a step along which it would like to change the current state. A
 weighted average is then taken of all these steps, leading to a proposed step.
 The size of this step is then limited using a decreasing parameter (the
 temperature) and applied. Small random disturbances may also be applied to

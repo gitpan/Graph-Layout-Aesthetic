@@ -133,7 +133,7 @@ Creates a new L<finished|"finish"> Graph::Layout::Aesthetic::Topology from
 a standard L<Graph|Graph> object $graph. It does this by first
 L<creating|"new_vertices"> a Graph::Layout::Aesthetic::Topology object with the
 right number of vertices and then L<enumerating all edges|Graph::Base/edges>
-in $graph and L<adding these to the topology/"add_edge"> if the edge hasn't
+in $graph and L<adding these to the topology|"add_edge"> if the edge hasn't
 been seen yet in either direction and doesn't start and end on the same vertex.
 
 The resulting $topology will then probably be passed to a

@@ -3,7 +3,7 @@ use 5.006001;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use base qw(Graph::Layout::Aesthetic::Force);
 
 __PACKAGE__->new->register;
@@ -13,7 +13,7 @@ __END__
 
 =head1 NAME
 
-Graph::Layout::Aesthetic::Force::Centripetal - nodes repel each other
+Graph::Layout::Aesthetic::Force::Centripetal - nodes try to move away from the center of gravity
 
 =head1 SYNOPSIS
 
@@ -23,7 +23,7 @@ Graph::Layout::Aesthetic::Force::Centripetal - nodes repel each other
 
 =head1 DESCRIPTION
 
-This module provides an aesthetic force for use by the 
+This module provides an aesthetic force for use by the
 L<Graph::Layout::Aesthetic package|Graph::Layout::Aesthetic>. It's normally
 implicitly loaded by using L<add_force|Graph::Layout::Aesthetic/add_force>.
 
@@ -32,7 +32,7 @@ The aesthetic force is that nodes are repelled from the center of gravity
 
 =head1 METHODS
 
-This class inherits from 
+This class inherits from
 L<Graph::Layout::Aesthetic::Force|Graph::Layout::Aesthetic::Force> and adds
 no methods of its own.
 
@@ -57,7 +57,7 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.6.1 or,
 at your option, any later version of Perl 5 you may have available.
 
-Much of the underlying XS code is derived from C code copyrighted by
+Much of the underlying L<XS|perlxs> code is derived from C code copyrighted by
 D. Stott Parker, who released it under the GNU GENERAL PUBLIC LICENSE
 (version 1).
 

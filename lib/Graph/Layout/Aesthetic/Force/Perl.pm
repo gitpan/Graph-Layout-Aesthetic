@@ -11,7 +11,7 @@ __END__
 
 =head1 NAME
 
-Graph::Layout::Aesthetic::Force::Perl - Write aesthetic forces in perl
+Graph::Layout::Aesthetic::Force::Perl - Write aesthetic forces using perl
 
 =head1 SYNOPSIS
 
@@ -58,7 +58,7 @@ Graph::Layout::Aesthetic::Force::Perl - Write aesthetic forces in perl
 
 =head1 DESCRIPTION
 
-Graph::Layout::Aesthetic::Force::Perl is a baseclass for writing perl based
+Graph::Layout::Aesthetic::Force::Perl is a base class for writing perl based
 L<aesthetic forces|Graph::Layout::Aesthetic::Force>. This can be as simple as
 just providing a gradient method.
 
@@ -104,12 +104,12 @@ does (minimize edge lengths), but in pure perl.
 
 Graph::Layout::Aesthetic::Force::Perl inherits from
 L<Graph::Layout::Aesthetic::Force|Graph::Layout::Aesthetic::Force>, so all
-methods of that class are available. As extension writer you will probably be
-most interested in L<register|Graph::Layout::Aesthetic::Force/register> and
+methods of that class are available. As an extension writer you will probably
+be most interested in L<register|Graph::Layout::Aesthetic::Force/register> and
 L<_private_data|Graph::Layout::Aesthetic::Force/_private_data>.
 
 The methods explained here aren't normally directly called by the user or
-even the programmer of the force, but implicitely by using the
+even the programmer of the force, but implicitly by using the
 L<Graph::Layout::Aesthetic|Graph::Layout::Aesthetic> package. They are
 documented here so the implementer of a force class (who can override the
 defaults) can see when and with which arguments his methods get called
@@ -139,7 +139,7 @@ So the $closure value can be used to associate state with a force/state pair.
 The default provided by Graph::Layout::Aesthetic::Force::Perl does nothing
 and simply returns undef.
 
-=item X<gradient>@gradient = $force->gradient($state, $gradient, $closure)
+=item X<gradient>$force->gradient($state, $gradient, $closure)
 
 This method gets called whenever a preferred gradient for a force is needed
 while laying out a graph (it corresponds to
@@ -171,8 +171,8 @@ Actually Graph::Layout::Aesthetic::Force::Perl (currently) has no DESTROY
 method, but inherits the one from
 L<Graph::Layout::Aesthetic::Force|Graph::Layout::Aesthetic::Force>. That one
 however must be called if in the end the $force object was constructed with
-the local L<new|"new"> method. So if you override DESTROY in your subclass, 
-you need to chain to that one (simply using $force->SUPER::DESTROY should be 
+the local L<new|"new"> method. So if you override DESTROY in your subclass,
+you need to chain to that one (simply using $force->SUPER::DESTROY should be
 good enough).
 
 =back
