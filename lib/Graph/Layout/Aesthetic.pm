@@ -6,7 +6,7 @@ use Carp;
 
 use Graph::Layout::Aesthetic::Force;
 
-our $VERSION = "0.07";
+our $VERSION = "0.08";
 
 require XSLoader;
 XSLoader::load('Graph::Layout::Aesthetic', $VERSION);

@@ -19,7 +19,7 @@ declare_aesth(perl);
 define_setup(perl) {
     private private;
     I32 count;
-    SV *f, *s;
+    SV *s;
     IV tmp;
     dSP;
 
@@ -67,9 +67,10 @@ define_cleanup(perl) {
     SV *f = PRIVATE->force_sv;
     SV *s = PRIVATE->state_sv;
     SV *c = PRIVATE->closure;
-    Safefree(private);
 
     dSP;
+
+    Safefree(private);
 
     ENTER;
     SAVETMPS;

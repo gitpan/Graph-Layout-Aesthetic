@@ -1,5 +1,5 @@
-#if !aglo_h
-#define aglo_h 1
+#ifndef aglo_h
+# define aglo_h 1
 
 typedef UV aglo_unsigned;
 typedef IV aglo_signed;
@@ -85,4 +85,4 @@ extern void aglo_iso_frame_coordinates(aglo_state state,
                                        aglo_point max_frame);
 extern void aglo_normalize_state(aglo_state state);
 extern void aglo_randomize(pTHX_ aglo_state state, aglo_real size);
-#endif
+#endif /* aglo_h */

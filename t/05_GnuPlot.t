@@ -25,7 +25,7 @@ END {
 my $MIN_VERSION = 3.7;
 $ENV{SHELL} = "/bin/false";
 
-use File::Temp;
+use File::Temp qw(tempfile);
 
 BEGIN { use_ok('Graph::Layout::Aesthetic::Monitor::GnuPlot') };
 BEGIN { use_ok('Graph::Layout::Aesthetic::Topology') };
@@ -65,12 +65,15 @@ $aglo->add_force("MinEdgeLength");
 
 {
     local @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot = qw(/);
-    eval { Graph::Layout::Aesthetic::Monitor::GnuPlot->new };
-    like($@, qr!^Could not start /: !, "/ isn't executable");
+    if ($^O ne "MSWin32") {
+        eval { Graph::Layout::Aesthetic::Monitor::GnuPlot->new };
+        like($@, qr!^Could not start /: !, "/ isn't executable");
+    }
 
-    $tmp = File::Temp->new;
+    (my $fh, my $tmp_name) = tempfile(UNLINK => 1);
+    open($tmp, "<", $tmp_name) || die "Could not open $tmp_name: $!";
     @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot =
-        ($^X, "t/tofile.pl", $tmp);
+        ($^X, "t/tofile.pl", $tmp_name);
     $curpos = 0;
     $have = "";
     my $monitor = Graph::Layout::Aesthetic::Monitor::GnuPlot->new;
@@ -163,10 +166,14 @@ e
     $monitor = undef;
     is($plot_count, 2);
 
+    $tmp = undef;
+    $fh  = undef;
+
     # Start a new monitor log
-    $tmp = File::Temp->new;
+    ($fh, $tmp_name) = tempfile(UNLINK => 1);
+    open($tmp, "<", $tmp_name) || die "Could not open $tmp_name: $!";
     @Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot =
-        ($^X, "t/tofile.pl", $tmp);
+        ($^X, "t/tofile.pl", $tmp_name);
     $curpos = 0;
     $have = "";
     $monitor = Graph::Layout::Aesthetic::Monitor::GnuPlot->new;
@@ -210,6 +217,8 @@ e
     $aglo->zero;
     eval { $monitor->plot($aglo) };
     like($@, qr!^Space is 4-dimensional \(gnuplot display only work in 2 or 3 dimensions\) at !, "Dimemsion check");
+    $tmp = undef;
+    $fh  = undef;
 }
 
 ok(@Graph::Layout::Aesthetic::Monitor::GnuPlot::gnu_plot,

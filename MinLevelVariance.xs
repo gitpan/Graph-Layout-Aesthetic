@@ -31,7 +31,6 @@ define_aesth(min_level_variance) {
     aglo_real *sum;
     aglo_vertex **l, *i;
     aglo_graph graph = state->graph;
-    /* aglo_real level_distance_sum[AGLO_MAX_GRAPH_SIZE] = {0}; /* sigma X */
     aglo_real *level_distance_sum = private;
 
     for (l=graph->level2nodes, sum = level_distance_sum; 

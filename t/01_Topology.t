@@ -66,19 +66,19 @@ $t->add_edge(3, 4, "foo");
 $t->add_edge(4, 5, substr("foo", 0, 1));
 $t->add_edge(6, 5, substr("foo", 1, 0));
 eval { $t->add_edge(0, 0) };
-like($@, qr!Vertex 0 connects to itself at t/01_Topology.t!,
+like($@, qr!Vertex 0 connects to itself at t.01_Topology.t!,
      "Disallow self edge");
 check_topology($t);
 is($t->finished, "", "Unfinished");
 eval { $t->levels };
 like($@,
-     qr!Won.t calculate node levels on an unfinished topology at t/01_Topology.t!,
+     qr!Won.t calculate node levels on an unfinished topology at t.01_Topology.t!,
      "Must finish before levels");
 $t->finish;
 check_topology($t);
 is($t->finished, 1, "Finished");
 eval { $t->finish };
-like($@, qr!Topology is already finished at t/01_Topology.t!);
+like($@, qr!Topology is already finished at t.01_Topology.t!);
 is_deeply([$t->levels], [0, 1, 1, 2, 3, 4, 5, 5 ], "Levels ok");
 
 $destroys = 0;

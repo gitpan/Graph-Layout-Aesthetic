@@ -13,8 +13,6 @@ void aglo_point_dec(aglo_unsigned d, aglo_point result, aglo_const_point arg);
 aglo_real aglo_point_mag(aglo_unsigned d,  aglo_const_point arg);
 aglo_real aglo_point_mag2(aglo_unsigned d, aglo_const_point arg);
 void aglo_point_midpoint(aglo_unsigned d, aglo_point result, aglo_const_point arg1, aglo_const_point arg2);
-void aglo_point_iso_frame(aglo_unsigned d, aglo_point min_iso_frame, aglo_point max_iso_frame,
-                          aglo_const_point min_frame, aglo_const_point max_frame);
 void aglo_point_scalar_mult(aglo_unsigned d, aglo_point result, aglo_real scalar_arg,
                             aglo_const_point point_arg);
 aglo_real aglo_point_dot_product(aglo_unsigned d, 

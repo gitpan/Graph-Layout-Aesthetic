@@ -22,8 +22,16 @@ sub new {
     my $after_plot = delete $params{after_plot};
     croak "Unknown parameter ", join(", ", keys %params) if %params;
 
-    no warnings 'exec';
-    open(my $fh, "|-", @gnu_plot) || croak "Could not start $gnu_plot[0]: $!";
+    my $fh;
+    if ($^O eq "MSWin32") {
+        local $" = " ";	# " unconfuse emacs
+        open($fh, "|-", "@gnu_plot") || 
+            croak "Could not start $gnu_plot[0]: $!";
+    } else {
+        no warnings 'exec';
+        open($fh, "|-", @gnu_plot) || 
+            croak "Could not start $gnu_plot[0]: $!";
+    }
     my $old = select($fh);
     eval {
         local $| = 1;

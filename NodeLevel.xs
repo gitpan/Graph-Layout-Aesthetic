@@ -12,7 +12,6 @@
 /* Temporarily abuse sorted list as array of booleans */
 #define at_level_assigned	level_sorted_vertex
 
-static int indent=0;
 static aglo_signed at_node_level_tree(aglo_graph graph, aglo_vertex v) {
     aglo_edge_record p;
     aglo_signed kid_level=1;

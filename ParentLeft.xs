@@ -16,7 +16,7 @@ declare_aesth(parent_left);
 #define K_PARENT_LEFT_BUFFER (5.0)
 
 define_setup(parent_left) {
-    return;
+    return NULL;
 }
 
 define_cleanup(parent_left) {
@@ -27,14 +27,15 @@ define_aesth(parent_left) {
     aglo_unsigned i, d = state->dimensions;
     aglo_graph graph = state->graph;
     aglo_edge_record p;
-    aglo_real a, b;
+    aglo_real a, b, diff, mag;
 
     for (i=0;i<graph->vertices;i++)
         for (p=graph->edge_table[i]; p; p= p->next)
             if (p->forward)
-                if ((a = state->point[i][AXIS] + K_PARENT_LEFT_BUFFER)
-                    >= (b = state->point[p->tail][AXIS])) {
-                    aglo_real mag = sqr(a - b);
+                if ((a = state->point[i][AXIS] + K_PARENT_LEFT_BUFFER) >= 
+                    (b = state->point[p->tail][AXIS])) {
+                    diff = a - b;
+                    mag = sqr(diff);
                     gradient[i*d+AXIS]		+= -mag;
                     gradient[p->tail*d+AXIS]	+=  mag;
                 }

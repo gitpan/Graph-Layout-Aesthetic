@@ -3,10 +3,16 @@
 #include "perl.h"
 #include "XSUB.h"
 
+/* Needed on systems that use drand48 for Drand01 but have no prototype */
+#ifndef HAS_DRAND48_PROTO
+extern double drand48 (void);
+#endif
+
 #include "ppport.h"
 
 #include "aglo.h"
 #include "point.h"
+#include "at_node_level.h"
 
 void aglo_frame_coordinates(aglo_state state,
                             aglo_point min_frame, aglo_point max_frame) {
@@ -83,49 +89,63 @@ void aglo_normalize_state(aglo_state state) {
     state->sequence++;
 }
 
+/* This dumps a value wherever the stackpointer hangs out, so take care */
+static void init_rand(void) {
+    /*
+    (void) seedDrand01((Rand_seed_t) Perl_seed(aTHX));
+    PL_srand_called = TRUE;
+    */
+    /* We call pp_rand here so that Drand01 get initialized if rand()
+       or srand() has not already been called
+    */
+    struct op dmy_op;
+    struct op *old_op = PL_op;
+
+    memzero((char*)(&dmy_op), sizeof(struct op));
+    /* we let pp_rand() borrow the TARG allocated for the XS sub */
+    dmy_op.op_targ = PL_op->op_targ;
+    PL_op = &dmy_op;
+    (void)*(PL_ppaddr[OP_RAND])(aTHX);
+    PL_op = old_op;
+}
+
 /* Jiggle a random point a bit in a random direction */
 static void jitter(pTHX_ aglo_state state, aglo_real distance) {
     aglo_unsigned d;
     aglo_vertex v;
-    aglo_real rand;
+    aglo_real rand_val;
 
     d = state->dimensions;
     if (d <= 0) croak("Cannot jitter a 0-dimensional state");
     v = state->graph->vertices;
     if (v <= 0) croak("Cannot jitter a graph without vertices");
 
-    if (!PL_srand_called) {
-	(void) seedDrand01((Rand_seed_t) Perl_seed(aTHX));
-	PL_srand_called = TRUE;
-    }
+    if (!PL_srand_called) init_rand();
     do {
         do {
-            rand = Drand01();
-        } while (rand == 0);
-        rand = 2*rand-1;
-    } while (rand == 0);
-    state->point[(aglo_unsigned) (Drand01()*v)][(aglo_unsigned)(Drand01()*d)] += distance * rand;
+            rand_val = Drand01();
+        } while (rand_val == 0);
+        rand_val = 2*rand_val-1;
+    } while (rand_val == 0);
+    state->point[(aglo_unsigned) (Drand01()*v)][(aglo_unsigned)(Drand01()*d)] += distance * rand_val;
     state->sequence++;
 }
 
 void aglo_randomize(pTHX_ aglo_state state, aglo_real size) {
     aglo_unsigned i, d;
     aglo_vertex p, v;
-    aglo_real rand;
+    aglo_real rand_val;
 
     d = state->dimensions;
     v = state->graph->vertices;
-    if (!PL_srand_called) {
-	(void) seedDrand01((Rand_seed_t) Perl_seed(aTHX));
-	PL_srand_called = TRUE;
-    }
+    if (!PL_srand_called) init_rand();
     for (p=0; p<v; p++) {
         aglo_real *here = state->point[p];
         for (i=0; i<d; i++) {
             do {
-                rand = Drand01();
-            } while (rand == 0);
-            here[i] = (rand*2-1)*size;
+                rand_val = Drand01();
+            } while (rand_val == 0);
+            here[i] = (rand_val*2-1)*size;
         }
     }
     state->sequence++;
@@ -150,7 +170,7 @@ static void limit_displacement(aglo_state state, aglo_real temperature) {
 }
 
 static void calculate_aesth_forces(aglo_state state) {
-    aglo_unsigned i, j, gradient_size;
+    aglo_unsigned i, gradient_size;
     use_force force, old_base;
     aglo_gradient gradient	 = state->gradient;
     aglo_gradient force_gradient = state->force_gradient;
@@ -173,10 +193,12 @@ static void calculate_aesth_forces(aglo_state state) {
 
 static void make_move(aglo_state state) {
     aglo_unsigned i, gradient_size;
+    aglo_gradient gradient, point;
+
     gradient_size = state->graph->vertices * state->dimensions;
-    aglo_gradient gradient = state->gradient;
+    gradient = state->gradient;
     /* Here I abuse the fact that I know points are allocated as a block */
-    aglo_gradient point = state->point[0];
+    point = state->point[0];
 
     for (i=0;i<gradient_size;i++) point[i] += gradient[i];
     state->sequence++;
@@ -189,6 +211,16 @@ void aglo_step(pTHX_ aglo_state state, aglo_real temperature, aglo_real jitter_s
     limit_displacement(state, temperature);
     make_move(state);
 }
+
+XS(boot_Graph__Layout__Aesthetic__Force__Centripetal);
+XS(boot_Graph__Layout__Aesthetic__Force__NodeRepulsion);
+XS(boot_Graph__Layout__Aesthetic__Force__NodeEdgeRepulsion);
+XS(boot_Graph__Layout__Aesthetic__Force__MinEdgeLength);
+XS(boot_Graph__Layout__Aesthetic__Force__ParentLeft);
+XS(boot_Graph__Layout__Aesthetic__Force__MinEdgeIntersect);
+XS(boot_Graph__Layout__Aesthetic__Force__MinEdgeIntersect2);
+XS(boot_Graph__Layout__Aesthetic__Force__MinLevelVariance);
+XS(boot_Graph__Layout__Aesthetic__Force__Perl);
 
 MODULE = Graph::Layout::Aesthetic		PACKAGE = Graph::Layout::Aesthetic::Topology
 PROTOTYPES: ENABLE
@@ -225,7 +257,6 @@ nr_vertices(aglo_graph topology)
 void
 neighbors(aglo_graph topology, aglo_vertex vertex)
   PREINIT:
-    aglo_unsigned i;
     aglo_edge_record here, next;
   PPCODE:
     if (vertex >= topology->vertices)
@@ -241,7 +272,6 @@ neighbors(aglo_graph topology, aglo_vertex vertex)
 void
 forward_neighbors(aglo_graph topology, aglo_vertex vertex)
   PREINIT:
-    aglo_unsigned i;
     aglo_edge_record here, next;
   PPCODE:
     if (vertex >= topology->vertices)
@@ -356,7 +386,7 @@ user_data(aglo_force force, SV *new_user_data=0)
 void
 _private_data(aglo_force force, SV *new_private_data=0)
   PPCODE:
-    if (GIMME_V != G_VOID) 
+    if (GIMME_V != G_VOID)
         XPUSHs(force->private_data ? force->private_data : &PL_sv_undef);
     if (new_private_data) {
         if (force->private_data) sv_2mortal(force->private_data);
@@ -379,12 +409,12 @@ new_state(char *class, SV *topology, aglo_signed nr_dimensions=2)
     aglo_state  state;
     aglo_real  *here;
     aglo_vertex i;
-    aglo_signed size;
+    IV tmp;
   CODE:
     if (!SvOK(topology)) croak("Topology is undefined");
     if (sv_derived_from(topology, "Graph::Layout::Aesthetic::Topology")) {
-        topology = (SV*)SvRV(topology);
-        IV tmp = SvIV(topology);
+        topology = (SV *) SvRV(topology);
+        tmp = SvIV(topology);
         gr = INT2PTR(aglo_graph, tmp);
     } else croak("Topology is not of type Graph::Layout::Aesthetic::Topology");
     if (!gr->done) croak("Topology hasn't been finished");
@@ -417,7 +447,7 @@ new_state(char *class, SV *topology, aglo_signed nr_dimensions=2)
 
     state->temperature = 1e2;
     state->end_temperature = 1e-3;
-    state->iterations = 1e3;
+    state->iterations = 1000;
 
     state->paused = 0;
 
@@ -815,18 +845,19 @@ _add_force(SV *state, SV *force, aglo_real weight=1)
     aglo_force fo;
     use_force  use;
     void *private;
+    IV tmp;
   PPCODE:
     if (!SvOK(force)) croak("Force is undefined");
     if (sv_derived_from(force, "Graph::Layout::Aesthetic::Force")) {
         force = (SV*) SvRV(force);
-        IV tmp = SvIV(force);
+        tmp = SvIV(force);
         fo = INT2PTR(aglo_force, tmp);
     } else croak("Force is not of type Graph::Layout::Aesthetic::Force");
 
     if (!SvOK(state)) croak("State is undefined");
     if (sv_derived_from(state, "Graph::Layout::Aesthetic")) {
         state = (SV*) SvRV(state);
-        IV tmp = SvIV(state);
+        tmp = SvIV(state);
         st = INT2PTR(aglo_state, tmp);
     } else croak("State is not of type Graph::Layout::Aesthetic");
 
@@ -966,9 +997,6 @@ void gradient(aglo_state state)
 
 aglo_real
 stress(aglo_state state)
-  PREINIT:
-    aglo_vertex i;
-    aglo_unsigned j;
   CODE:
     calculate_aesth_forces(state);
     RETVAL = aglo_point_mag(state->dimensions*state->graph->vertices, state->gradient);
@@ -1004,8 +1032,10 @@ DESTROY(SV *state)
   PPCODE:
     if (!SvOK(state)) croak("State is undefined");
     if (sv_derived_from(state, "Graph::Layout::Aesthetic")) {
+        IV tmp;
+
         state = (SV*) SvRV(state);
-        IV tmp = SvIV(state);
+        tmp = SvIV(state);
         st = INT2PTR(aglo_state, tmp);
     } else croak("State is not of type Graph::Layout::Aesthetic");
 
@@ -1022,7 +1052,7 @@ DESTROY(SV *state)
         PUTBACK ;
 
         /* This is an infinite loop if clear_forces makes no progress.
-           So be it, it will indicate a bug anyways, and it's better than 
+           So be it, it will indicate a bug anyways, and it's better than
            leaking memory */
         count = call_method("clear_forces", G_EVAL|G_KEEPERR|G_VOID);
         SPAGAIN;
