@@ -22,7 +22,7 @@ to install in $Config{installscript}.
 
 EOT
 ;
-    push @programs_to_install, "bin/gloss.pl" if 
+    push @programs_to_install, "bin/gloss.pl" if
         prompt("Install gloss.pl, a commandline graph layouter ?", "y") =~ /^y/i;
 }
 
@@ -48,7 +48,8 @@ WriteMakefile
      VERSION_FROM	=> 'lib/Graph/Layout/Aesthetic.pm',
      PERL_MALLOC_OK	=> 1,
      PREREQ_PM		=> {
-         "Test::More"		=> 0.11,	# For the tests only
+         "Test::More"	=> 0.11,	# For the tests only
+         # "Graph"	=> 0.50,	# Optional
      },
      ($] >= 5.005 ?
       (AUTHOR		=> 'Ton Hospel <Graph-Layout-Aesthetic@ton.iguana.be>') : ()),
@@ -61,9 +62,9 @@ WriteMakefile
      LIBS		=> [''], # e.g., '-lm'
      DEFINE		=> '',   # e.g., '-DHAVE_SOMETHING'
      INC		=> '-I include',
-     H			=> [qw(include/aesth.h include/aglo.h 
-                               include/at_centroid.h include/at_node_level.h 
-                               include/at_sample.h include/defines.h 
+     H			=> [qw(include/aesth.h include/aglo.h
+                               include/at_centroid.h include/at_node_level.h
+                               include/at_sample.h include/defines.h
                                include/point.h)],
      OBJECT		=> q/$(O_FILES)/,
      EXE_FILES		=> \@programs_to_install,

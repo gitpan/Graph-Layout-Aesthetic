@@ -16,6 +16,9 @@ TODO:
 	  argument.
 	- If C-structures change, derived classes should notice and not load.
 
+0.10
+	- Updated for the new interface of Graph 0.50
+
 0.09  2005-07-28
 	- The windows frontent to gnuplot is called "pgnuplot"
 	- The default gnuplot terminaltype is "windows", not "X11"

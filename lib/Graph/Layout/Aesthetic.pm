@@ -6,7 +6,7 @@ use Carp;
 
 use Graph::Layout::Aesthetic::Force;
 
-our $VERSION = "0.09";
+our $VERSION = "0.10";
 
 require XSLoader;
 XSLoader::load('Graph::Layout::Aesthetic', $VERSION);
@@ -101,19 +101,19 @@ sub coordinates_to_graph {
         @pos == $aglo->nr_dimensions || croak "Number of entries in the position attribute array must be equal to the number of dimensions";
         for my $vertex ($ref_name ? keys %$name : $graph->vertices) {
             defined($id = $ref_name ? $name->{$vertex} :
-                    $graph->get_attribute($name, $vertex)) ||
+                    $graph->get_vertex_attribute($vertex, $name)) ||
                     croak "Vertex '$vertex' has no '$name' attribute";
             my $coordinate = $coordinates->[$id];
-            $graph->set_attribute($pos[$_], $vertex, $coordinate->[$_]) for
-                0..$#pos;
+            $graph->set_vertex_attribute($vertex, $pos[$_], $coordinate->[$_])
+                for 0..$#pos;
         }
     } elsif (defined($pos)) {
         my $coordinates = $aglo->all_coordinates;
         for my $vertex ($ref_name ? keys %$name : $graph->vertices) {
             defined($id = $ref_name ? $name->{$vertex} :
-                    $graph->get_attribute($name, $vertex)) ||
+                    $graph->get_vertex_attribute($vertex, $name)) ||
                     croak "Vertex '$vertex' has no '$name' attribute";
-            $graph->set_attribute($pos, $vertex, $coordinates->[$id]);
+            $graph->set_vertex_attribute($vertex, $pos, $coordinates->[$id]);
         }
     }
 
@@ -122,16 +122,16 @@ sub coordinates_to_graph {
 
         if (ref $min_attr) {
             @$min_attr == $aglo->nr_dimensions || croak "Number of entries in the minimum attribute array must be equal to the number of dimensions";
-            $graph->set_attribute($_, shift @$min) for @$min_attr;
+            $graph->set_graph_attribute($_, shift @$min) for @$min_attr;
         } elsif (defined $min_attr) {
-            $graph->set_attribute($min_attr, $min);
+            $graph->set_graph_attribute($min_attr, $min);
         }
 
         if (ref $max_attr) {
             @$max_attr == $aglo->nr_dimensions || croak "Number of entries in the maximum attribute array must be equal to the number of dimensions";
-            $graph->set_attribute($_, shift @$max) for @$max_attr;
+            $graph->set_graph_attribute($_, shift @$max) for @$max_attr;
         } elsif (defined $max_attr) {
-            $graph->set_attribute($max_attr, $max);
+            $graph->set_graph_attribute($max_attr, $max);
         }
     }
 }
@@ -171,10 +171,10 @@ sub gloss_graph {
             my @hold = @$hold;
             @hold == $aglo->nr_dimensions || croak "Number of entries in the position attribute array must be equal to the number of dimensions";
             for my $vertex (keys %id) {
-                $aglo->coordinates($id{$vertex}, map $graph->has_attribute($_, $vertex) ? $graph->get_attribute($_, $vertex) : croak("Attribute '$_' for vertex '$vertex' doesn't exist"), @hold);
+                $aglo->coordinates($id{$vertex}, map $graph->has_vertex_attribute($vertex, $_) ? $graph->get_vertex_attribute($vertex, $_) : croak("Attribute '$_' for vertex '$vertex' doesn't exist"), @hold);
             }
         } else {
-            $aglo->coordinates($id{$_}, $graph->get_attribute($hold, $_) ||
+            $aglo->coordinates($id{$_}, $graph->get_vertex_attribute($_, $hold) ||
                                croak "Attribute '$hold' for vertex '$_' is not an array reference") for keys %id;
         }
     }
@@ -311,7 +311,7 @@ The package also comes with a simple commandline tool L<gloss.pl|gloss.pl(1)>
 
 =head1 EXAMPLE2
 
-  use Graph;
+  use Graph 0.50;
   use Graph::Layout::Aesthetic;
 
   my $g = Graph->new(...);
@@ -722,7 +722,7 @@ L<Graph::Renderer|Graph::Renderer> expects) you could use:
   $aglo->coordinates_to_graph($graph,
                               pos_attribute => ["layout_pos1", "layout_pos2"]);
   # And now you can get the second coordinate of vertex foo by doing:
-  my $y = $graph->get_attribute("layout_pos2", "foo");
+  my $y = $graph->get_vertex_attribute("foo", "layout_pos2");
 
 =item X<coordinates_to_graph_min_attribute>min_attribute => $name
 
@@ -814,8 +814,8 @@ if it's an array reference, the strings in there will correspond to the
 components of the starting coordinates. So you can do something like this:
 
     # Set up starting coordinates of vertex_0
-    $graph->set_attribute("x_start", "vertex_0", 1);
-    $graph->set_attribute("y_start", "vertex_0", 1);
+    $graph->set_vertex_attribute("vertex_0", "x_start", 1);
+    $graph->set_vertex_attribute("vertex_0", "y_start", 1);
     # Set the other vertices too
     ...
 
@@ -829,8 +829,8 @@ components of the starting coordinates. So you can do something like this:
                                           });
 
     printf("The final coordinates of vertex_0 are (%f, %f)\n",
-           $graph->get_attribute("x_end", "vertex_0"),
-           $graph->get_attribute("y_end", "vertex_0"));
+           $graph->get_vertex_attribute("vertex_0", "x_end"),
+           $graph->get_vertex_attribute("vertex_0", "y_end"));
     # Print the other vertices too
     ...
 

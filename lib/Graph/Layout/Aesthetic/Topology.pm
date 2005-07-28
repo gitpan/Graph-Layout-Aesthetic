@@ -18,7 +18,7 @@ sub from_graph {
 
     croak "Unknown parameter ", join(", ", keys %params) if %params;
 
-    my ($num, $f, $t);
+    my $num;
 
     # Set up a mapping from vertices to numbers
     my $nr = 0;
@@ -29,8 +29,8 @@ sub from_graph {
     } else {
         $num = {};
         if (defined($attribute)) {
-            $graph->set_attribute($attribute, $_, $num->{$_} = $nr++) for 
-                $graph->vertices;
+            $graph->set_vertex_attribute($_, $attribute, $num->{$_} = $nr++) 
+                for $graph->vertices;
         } else {
             $num->{$_} = $nr++ for $graph->vertices;
         }
@@ -41,26 +41,17 @@ sub from_graph {
 
     # Enter edges
     if ($literal) {
-        for ($graph->edges) {
-            if (defined($f)) {
-                $topo->add_edge($f, $num->{$_});
-                $f = undef;
-            } else {
-                $f = $num->{$_};
-            }
+        for my $edge ($graph->edges) {
+            $topo->add_edge($num->{$edge->[0]}, $num->{$edge->[1]});
         }
     } else {
-        my %seen;
-        for ($graph->edges) {
-            if (defined($f)) {
-                $t = $num->{$_};
-                unless ($f == $t || $seen{$f}{$t} || $seen{$t}{$f}) {
-                    $seen{$f}{$t} = 1;
-                    $topo->add_edge($f, $t);
-                }
-                $f = undef;
-            } else {
-                $f = $num->{$_};
+        my (%seen, $f, $t);
+        for my $edge ($graph->edges) {
+            $f = $num->{$edge->[0]};
+            $t = $num->{$edge->[1]};
+            if ($f != $t && !$seen{$f}{$t} && !$seen{$t}{$f}) {
+                $seen{$f}{$t} = 1;
+                $topo->add_edge($f, $t);
             }
         }
     }
