@@ -6,7 +6,7 @@ use Carp;
 
 use Graph::Layout::Aesthetic::Force;
 
-our $VERSION = "0.08";
+our $VERSION = "0.09";
 
 require XSLoader;
 XSLoader::load('Graph::Layout::Aesthetic', $VERSION);
@@ -324,6 +324,14 @@ The package also comes with a simple commandline tool L<gloss.pl|gloss.pl(1)>
                                         });
   # That's all folks. Vertex positions will be in the "layout_pos" attribute
 
+=head1 EXAMPLE3
+
+See L<gloss.pl|gloss.pl> (found in the bin/ directory of the
+Graph::Layout::Aesthetic distribution) for an example of a simple commandline
+program based on this module. If you have L<gnuplot|gnuplot(1)> you can use
+L<the examples documented there|gloss.pl/EXAMPLES> to view the kind of layouts
+you can generate using this module.
+
 =head1 METHODS
 
 =over
@@ -441,8 +449,8 @@ with which the edge was entered into the topology).
 This method exists for backward compatibility with the way the original
 L<gloss|gloss(1)> program reported the edge list. For many applications
 it will probably make more sense to combine the result of
-L<$topology->edges|Graph::Layout::Aesthetic::Topology/edges> with
-L<$aglo->all_coordinates|"all_coordinates">.
+L<$topology-E<gt>edges|Graph::Layout::Aesthetic::Topology/edges> with
+L<$aglo-E<gt>all_coordinates|"all_coordinates">.
 
 =item X<scalar_increasing_edges>$edges = $aglo->increasing_edges
 
@@ -683,7 +691,7 @@ L<the containing frame|"frame"> as global graph attributes.
 
 =item X<coordinates_to_graph_id_attribute>id_attribute => $name
 
-$name is the the graph vertices attribute that for each vertex identifies the
+$name is the the $graph vertices attribute that for each vertex identifies the
 corresponding vertex in L<$aglo-E<gt>topology|"topology">, and defaults to
 C<"layout_id">. It may also be a hash reference, in which case node ids are
 looked up in the hash instead of as atrributes in the graph. So this argument
@@ -694,7 +702,7 @@ L<Graph::Layout::Aesthetic::Topology from_graph method|Graph::Layout::Aesthetic:
 
 =item X<coordinates_to_graph_pos_attribute>pos_attribute => $name
 
-$name is the graph vertices attribute that will be used to set the
+$name is the $graph vertices attribute that will be used to set the
 coordinates and defaults to C<"layout_pos"> if not given at all.
 
 If $name is undef, no vertex attribute will be set.
@@ -865,7 +873,11 @@ None.
 
 L<http://www.cs.ucla.edu/~stott/aglo/>,
 L<Graph::Layout::Aesthetic::Topology>,
-L<Graph::Layout::Aesthetic::Monitor::GnuPlot>,
+L<Graph::Layout::Aesthetic::Force>,
+L<Graph::Layout::Aesthetic::Monitor::GnuPlot>
+
+Other relevant modules:
+
 L<Graph>,
 L<Graph::Layouter>,
 L<Graph::Renderer>,
@@ -880,7 +892,7 @@ if your different objects use the same forces at the same time.
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt> for the perl code
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt> for the perl code
 and the L<XS|perlxs> wrappers.
 
 Much of the C code is equal to or derived from the original code by

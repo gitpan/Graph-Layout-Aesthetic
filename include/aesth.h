@@ -14,17 +14,17 @@
 	
 
 # define define_aesth(AESTHETIC_NAME)				\
-	void ae_##AESTHETIC_NAME(aglo_state state,		\
+	void ae_##AESTHETIC_NAME(pTHX_ aglo_state state,	\
 				 aglo_gradient gradient,	\
                                  void *private)
 
 # define define_setup(AESTHETIC_NAME) \
-	void *ae_setup_##AESTHETIC_NAME(SV *force_sv,			\
+	void *ae_setup_##AESTHETIC_NAME(pTHX_ SV *force_sv,		\
 					SV *state_sv,			\
 					aglo_state state)
 
 # define define_cleanup(AESTHETIC_NAME) \
-	void ae_cleanup_##AESTHETIC_NAME(aglo_state state, void *private)
+	void ae_cleanup_##AESTHETIC_NAME(pTHX_ aglo_state state, void *private)
 
 # define PRIVATE	((struct private *) private)
 

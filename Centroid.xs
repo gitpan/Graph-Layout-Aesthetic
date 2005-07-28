@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT	/* we want efficiency */
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -25,3 +26,5 @@ aglo_const_point at_centroid(aglo_state state) {
     }
     return state->cached_centroid;
 }
+
+MODULE = Graph::Layout::Aesthetic::Dummy::Centroid	PACKAGE = Graph::Layout::Aesthetic::Dummy

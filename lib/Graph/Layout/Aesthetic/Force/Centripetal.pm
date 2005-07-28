@@ -13,7 +13,7 @@ __END__
 
 =head1 NAME
 
-Graph::Layout::Aesthetic::Force::Centripetal - nodes try to move away from the center of gravity
+Graph::Layout::Aesthetic::Force::Centripetal - Nodes try to move away from the center of gravity
 
 =head1 SYNOPSIS
 
@@ -47,7 +47,7 @@ L<Graph::Layout::Aesthetic::Force>
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt>
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

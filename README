@@ -49,7 +49,7 @@ This module requires these other modules and libraries:
 
 =head1 AUTHOR
 
-Ton Hospel, <Graph::Layout::Aesthetic@ton.iguana.be> for the perl code
+Ton Hospel, <Graph-Layout-Aesthetic@ton.iguana.be> for the perl code
 and the xs wrappers.
 
 Much of the C code is equal to or derived from the original code by

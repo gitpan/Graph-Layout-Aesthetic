@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT	/* we want efficiency */
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -79,3 +80,5 @@ void aglo_point_zero(aglo_unsigned d, aglo_point result) {
 
     for (i=0;i<d;i++) result[i] = 0;
 }
+
+MODULE = Graph::Layout::Aesthetic::Dummy::Point		PACKAGE = Graph::Layout::Aesthetic::Dummy

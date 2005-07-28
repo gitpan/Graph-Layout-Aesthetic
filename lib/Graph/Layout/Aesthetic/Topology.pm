@@ -95,6 +95,11 @@ Graph::Layout::Aesthetic::Topology - Graph topology for use by Graph::Layout::Ae
   @vertex_levels = $topology->levels;
   $boolean	 = $topology->finished;
 
+  $old_private_data = $topology->_private_data;
+  $old_private_data = $topology->_private_data($new_private_data);
+  $old_user_data    = $topology->user_data;
+  $old_user_data    = $topology->user_data($new_user_data);
+
 =head1 DESCRIPTION
 
 A Graph::Layout::Aesthetic::Topology objects represents a directed graph
@@ -233,6 +238,32 @@ will croak if the $topology hasn't been L<finished|"finish"> yet.
 
 Returns true if $topology has been L<finished|"finish">, false otherwise.
 
+=item X<private_data>$old_private_data = $topology->_private_data
+
+Every topology object is associated with one scalar of private data (default
+undef). This is perl data meant for the implementer of a Topology class, and 
+should normally not be manipulated by the user (see
+L<user_data|"user_data"> for that).
+
+This method returns that private data.
+
+=item $old_private_data = $topology->_private_data($new_private_data)
+
+Sets new private data, returns the old value.
+
+=item X<user_data>$old_user_data = $topology->user_data
+
+Every topology object is associated with one scalar of user data (default
+undef). This is perl data meant for the enduser of a topology class,
+and should normally not be manipulated inside the topology class
+(see L<private_data|"private_data"> for that).
+
+This method returns that user data.
+
+=item $old_user_data = $topology->user_data($new_user_data)
+
+Sets new user data, returns the old value.
+
 =back
 
 =head1 EXPORT
@@ -251,7 +282,7 @@ time, but any specific object should only have at most one call active.
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.bE<gt>
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -10,23 +10,11 @@ aglo_signed		T_IV
 
 INPUT
 T_PTROBJ_TOPOLOGY
-        if (!SvOK($arg)) croak(\"$var is undefined\");
-	if (sv_derived_from($arg, \"Graph::Layout::Aesthetic::Topology\")) {
-	    IV tmp = SvIV((SV*)SvRV($arg));
-	    $var = INT2PTR($type, tmp);
-	} else croak(\"$var is not of type Graph::Layout::Aesthetic::Topology\")
+        $var = C_OBJECT($arg, \"Graph::Layout::Aesthetic::Topology\",\"$var\");
 T_PTROBJ_GRAPH
-        if (!SvOK($arg)) croak(\"$var is undefined\");
-	if (sv_derived_from($arg, \"Graph::Layout::Aesthetic\")) {
-	    IV tmp = SvIV((SV*)SvRV($arg));
-	    $var = INT2PTR($type, tmp);
-	} else croak(\"$var is not of type Graph::Layout::Aesthetic\")
+        $var = C_OBJECT($arg, \"Graph::Layout::Aesthetic\", \"$var\");
 T_PTROBJ_FORCE
-        if (!SvOK($arg)) croak(\"$var is undefined\");
-	if (sv_derived_from($arg, \"Graph::Layout::Aesthetic::Force\")) {
-	    IV tmp = SvIV((SV*)SvRV($arg));
-	    $var = INT2PTR($type, tmp);
-	} else croak(\"$var is not of type Graph::Layout::Aesthetic::Force\")
+        $var = C_OBJECT($arg, \"Graph::Layout::Aesthetic::Force\", \"$var\");
 
 OUTPUT
 T_PTROBJ_TOPOLOGY

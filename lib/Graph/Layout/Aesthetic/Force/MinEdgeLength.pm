@@ -47,7 +47,7 @@ L<Graph::Layout::Aesthetic::Force>
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt>
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

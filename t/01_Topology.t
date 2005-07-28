@@ -85,6 +85,40 @@ $destroys = 0;
 $t = undef;
 is($destroys, 1, "Topology object properly destroyed");
 
+my $canaries = 0;
+{
+    package Canary;
+
+    sub new {
+        $canaries++;
+        return bless [], shift;
+    }
+
+    sub DESTROY {
+        $canaries--;
+    }
+}
+
+# check user_data
+for my $data (qw(user_data _private_data)) {
+    my $t = Graph::Layout::Aesthetic::Topology->new_vertices(1);
+    is($t->$data, undef);
+    is($t->$data(5), undef);
+    is($t->$data(6), 5);
+    is($t->$data, 6);
+    is($t->$data, 6);
+    $t->$data(7);
+    is($t->$data, 7);
+    is($t->$data(Canary->new), 7);
+    is($canaries, 1);
+    isa_ok($t->$data(8), "Canary");
+    is($canaries, 0);
+    $t->$data(Canary->new);
+    is($canaries, 1);
+    $t = undef;
+    is($canaries, 0);
+}
+
 can_ok("Graph::Layout::Aesthetic::Topology", qw(from_graph)); 
 if ($has_directed) {
     my $g = Graph::Directed->new;

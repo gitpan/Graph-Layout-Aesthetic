@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT	/* we want efficiency */
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -131,3 +132,5 @@ void at_setup_node_level(aglo_graph graph) {
         graph->level_sequence = 1;
     }
 }
+
+MODULE = Graph::Layout::Aesthetic::Dummy::NodeLevel	PACKAGE = Graph::Layout::Aesthetic::Dummy

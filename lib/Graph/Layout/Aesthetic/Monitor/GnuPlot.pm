@@ -4,13 +4,14 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 our @CARP_NOT = qw(package Graph::Layout::Aesthetic);
 
-our @gnu_plot = qw(gnuplot -geometry 600x700-1+1);
+our @gnu_plot = $^O eq "MSWin32" ? 
+    qw(pgnuplot) : qw(gnuplot -geometry 600x700-1+1);
 # our @gnu_plot = qw(tee blub);
 our $margin = 0.05;
-our $init_config = "set terminal X11
+our $init_config = ($^O eq "MSWin32" ? "set terminal windows" : "set terminal X11") . "
 set data style linespoints
 set offsets 0.1, 0.1, 0.1, 0.1
 set nokey
@@ -215,7 +216,7 @@ L<gnuplot(1)>
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt>
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

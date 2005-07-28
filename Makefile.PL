@@ -32,7 +32,7 @@ for (qw(Graph::Directed Graph::Undirected)) {
 }
 
 my $MIN_VERSION = 3.7;
-my $program = "gnuplot";
+my $program = $^O eq "MSWin32" ? "pgnuplot" : "gnuplot";
 seek(DATA,0,1);	# Old perls needs this
 open(STDIN, "<&DATA") || die "Could not dup DATA to STDIN: $!";
 my $out = `$program 2>&1`;
@@ -51,7 +51,7 @@ WriteMakefile
          "Test::More"		=> 0.11,	# For the tests only
      },
      ($] >= 5.005 ?
-      (AUTHOR		=> 'Ton Hospel <Graph::Layout::Aesthetic@ton.iguana.be>') : ()),
+      (AUTHOR		=> 'Ton Hospel <Graph-Layout-Aesthetic@ton.iguana.be>') : ()),
      depend => {
          # Evil hack, probably unportable
          'lib/Graph/Layout/Aesthetic/Include.pm' => 'Makefile.PL gen_include $(H_FILES) typemap

@@ -119,8 +119,8 @@ defaults) can see when and with which arguments his methods get called
 =item X<new>$force = Graph::Layout::Aesthetic::Force::Perl->new
 
 This is the default constructor provided by
-Graph::Layout::Aesthetic::Force::Perl. It is returns a perl wrapper around a
-C-structure (which is what a
+Graph::Layout::Aesthetic::Force::Perl. It returns a perl object that's really
+a wrapper around a C-structure (which is what a
 L<Graph::Layout::Aesthetic::Force|Graph::Layout::Aesthetic::Force> object must
 be). So if you want to write your own constructor, you'll still need to call
 this internally, and then you can use
@@ -159,11 +159,12 @@ subclass.
 This method gets called when $force gets disassociated from $state (it
 corresponds to
 L<aesth_cleanup in Graph::Layout::Aesthetic::Force|Graph::Layout::Aesthetic::Force/aesth_cleanup>).
-A typical use would be to clean up things implied by $closure.
+A typical use would be to clean up things created during L<setup|"setup"> and
+remembered in $closure.
 
-Since perl has its own garbage collection and you can already associate methods
-with data going away, quite often you don't want to do anything here. Which is
-exactly what the default cleanup method does: nothing.
+Since perl has its own garbage collection and DESTROY can already associate 
+a callback with data going away, usually you don't need to do anything 
+here. Which is exactly what the default cleanup method does: nothing.
 
 =item X<DESTROY>$force->DESTROY
 
@@ -188,7 +189,7 @@ L<Graph::Layout::Aesthetic::Force>
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt>
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

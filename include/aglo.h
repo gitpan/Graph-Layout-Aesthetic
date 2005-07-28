@@ -1,6 +1,15 @@
 #ifndef aglo_h
 # define aglo_h 1
 
+#define C_OBJECT(object, class, context)	\
+	aglo_c_object(aTHX_ &(object), class, context)
+extern void *aglo_c_object(pTHX_ SV **object, const char *class,
+                           const char *context);
+
+#define C_CHECK(object, class, context)	\
+	aglo_c_check(aTHX_ object, class, context)
+extern void *aglo_c_check(pTHX_ SV *object, const char *class, 
+                          const char *context);
 typedef UV aglo_unsigned;
 typedef IV aglo_signed;
 typedef double aglo_real;
@@ -28,7 +37,9 @@ typedef struct aglo_graph {
     aglo_signed	       *at_level;
     aglo_vertex	       *level_sorted_vertex;
     aglo_vertex       **level2nodes;
-    aglo_edge_record	edge_table[1];
+    void	       *private_data;
+    void	       *user_data;
+    aglo_edge_record	edge_table[1];	/* must be last */
 } *aglo_graph;
 
 typedef aglo_real  *aglo_point;
@@ -47,17 +58,17 @@ typedef struct aglo_state {
     aglo_signed		centroid_sequence;
     aglo_gradient	gradient, force_gradient;
     aglo_boolean	paused;
-    aglo_point cached_centroid;
-    aglo_point point[1];	/* State vector */
+    aglo_point		cached_centroid;
+    aglo_point		point[1];	/* State vector, must be last */
 } *aglo_state;
 
-typedef void aglo_aesth_gradient_fx(aglo_state state,
+typedef void aglo_aesth_gradient_fx(pTHX_ aglo_state state,
                                     aglo_gradient gradient, void *private);
 typedef aglo_aesth_gradient_fx *aglo_aesth_gradient;
-typedef void *aglo_aesth_setup_fx(SV *force_sv, SV *state_sv, 
+typedef void *aglo_aesth_setup_fx(pTHX_ SV *force_sv, SV *state_sv, 
                                   aglo_state state);
 typedef aglo_aesth_setup_fx *aglo_aesth_setup;
-typedef void aglo_aesth_cleanup_fx(aglo_state state, 
+typedef void aglo_aesth_cleanup_fx(pTHX_ aglo_state state, 
                                    void *private);
 typedef aglo_aesth_cleanup_fx *aglo_aesth_cleanup;
 

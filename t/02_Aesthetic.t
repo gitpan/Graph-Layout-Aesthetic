@@ -209,7 +209,7 @@ sub g_is_random {
 }
 
 eval { Graph::Layout::Aesthetic->new };
-like($@, qr!Topology is undefined at !, "Must have a topology argument");
+like($@, qr!topology is undefined at !i, "Must have a topology argument");
 
 $topo_destroys = 0;
 my $topo3 = Graph::Layout::Aesthetic::Topology->new_vertices(3);
@@ -344,7 +344,7 @@ is($force_destroys, 2, "The force is alive");
 $force_destroys = 0;
 $aglo = Graph::Layout::Aesthetic->new($topo3, 3);
 eval { $aglo->_add_force(undef) };
-like($@, qr!Force is undefined at !, "Proper error message");
+like($@, qr!force is undefined at !i, "Proper error message");
 eval { $aglo->add_force };
 like($@, qr!No force name at !, "Proper error message");
 $aglo->add_force("NodeRepulsion");

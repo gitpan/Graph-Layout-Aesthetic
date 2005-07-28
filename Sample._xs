@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT	/* we want efficiency */
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -14,18 +15,10 @@ declare_aesth(sample);
 
 
 define_setup(sample) {
-    /* Gets called once at the start of each 'aglo_find_layout' call. */
-    return;
-}
-
-define_cleanup(sample) {
-    /* Gets called once at the start of each 'aglo_find_layout' call. */
-    return;
-}
-
-define_cleanup(sample) {
-    /* Gets called once at the start of each 'aglo_find_layout' call. */
-    return;
+    /* Gets called once when a force is added to a state.
+       You can allocate private data and return that here. 
+       The private data will be available to the aesth and cleanup methods */
+    return NULL;
 }
 
 define_aesth(sample) {
@@ -40,6 +33,12 @@ define_aesth(sample) {
     return;
 }
 
+define_cleanup(sample) {
+    /* Gets called once when a force is detached from a state.
+       You can clean up any private data here */
+    return;
+}
+
 MODULE = Graph::Layout::Aesthetic::Force::Sample	PACKAGE = Graph::Layout::Aesthetic::Force::Sample
 PROTOTYPES: ENABLE
 
@@ -50,8 +49,9 @@ new(const char *class)
   CODE:
     New(__LINE__, force, 1, struct aglo_force);
     force->aesth_gradient = ae_sample;
-    force->aesth_setup	 = ae_setup_sample;
+    force->aesth_setup    = ae_setup_sample;
     force->aesth_cleanup  = ae_cleanup_sample;
+    force->user_data = force->private_data = NULL;
     RETVAL = NEWSV(1, 0);
     sv_setref_pv(RETVAL, class, (void*) force);
   OUTPUT:

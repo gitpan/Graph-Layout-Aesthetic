@@ -7,9 +7,29 @@ TODO:
 	  from a graph attribute, or from the pos/hold attribute size
 	  if array references or the already existing coordinates if hold is
 	  a string. Not sure if this is a good idea.
-        - Add magic tests (works at all, no extra uneeded accesses)
+        - Add magic tests (does it work at all ? No uneeded extra accesses ?)
+	- self-locking
+	- generalize a way to efficiently put vertex attributes in a topology.
+	- MD5 of files in Include.pm and compare with inline value. 
+	  If they differ, protest (author should then increase version and MD5)
+	- add_force should probably also take forces instead of names as
+	  argument.
+	- If C-structures change, derived classes should notice and not load.
 
-0.08  2004-11-07
+0.09  2005-07-28
+	- The windows frontent to gnuplot is called "pgnuplot"
+	- The default gnuplot terminaltype is "windows", not "X11"
+	- Don't try to pass a geometry argument to gnuplot on windows.
+	- Start using PERL_NO_GET_CONTEXT, and properly propagate the 
+	  interpreter context everywhere.
+	- Replaced :: by - in author email address (easier quoting for mailers)
+	- Replace object access by more paranoid versions.
+	- Updated Sample._xs to reflect current reality.
+	- Added dummy MODULE lines in the .xs files that don't have it (or 
+	  really need it). Some versions of xsubpp seem to insist on this.
+	- Minor documentation updates.
+
+0.08  2004-11-08
         - There were variable declarations inside code.
         - Predeclare the boot_ calls.
 	- remove aglo_point_iso_frame before anyone thinks that actually works.
@@ -17,13 +37,15 @@ TODO:
 	- Rename the variable "rand" to something else. Some compilers dislike
 	  the conflict with rand().
 	- Call perl rand through the opcode table if the random generator is 
-          uninitialized.
-	- Remove inline, unportable
-	- tests should not depend on fileseparator
+          uninitialized (might need a fake pad if someone uses this from XSUB)
+	- Remove inline, unportable. Use macros instead.
+	- fmin() is unused. min() and max() are very popular macro names and
+	  sometimes cause conflicts. Drop them.
+	- Tests should not depend on fileseparator (\ versus /)
 	- Don't use the OO interface to File::Temp, it's not yet in older 
 	  perls.
 	- File::Temp tempfiles are seemingly opened in binmode. Do the tail
-	  in textmode in t/05_GnuPlot.t
+	  in textmode in t/05_GnuPlot.t.
 
 0.07  2004-11-06
 	- Make user_data and _private data into lvalue subs.

@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT	/* we want efficiency */
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -20,7 +21,7 @@ define_setup(perl) {
     private private;
     I32 count;
     SV *s;
-    IV tmp;
+    aglo_state tmp;
     dSP;
 
     ENTER;
@@ -32,11 +33,8 @@ define_setup(perl) {
     PUSHs(s = sv_2mortal(newRV(state_sv)));
     PUTBACK;
 
-    if (!sv_derived_from(s, "Graph::Layout::Aesthetic"))
-        croak("State_sv is not of type Graph::Layout::Aesthetic");
-    tmp = SvIV(state_sv);
-    if (state != INT2PTR(aglo_state, tmp))
-        croak("state is not the struct referred by state_sv");
+    tmp = C_CHECK(state_sv, "Graph::Layout::Aesthetic", "state_sv");
+    if (tmp != state) croak("state is not the struct referred by state_sv");
 
     /* We don't check the class of force_sv. If the user wants to do evil
        things, let him */
@@ -197,9 +195,14 @@ new(const char *class)
 void
 setup(SV *force, SV *state)
   PPCODE:
+    PERL_UNUSED_VAR(force);
+    PERL_UNUSED_VAR(state);
     EXTEND(SP, 1);
     PUSHs(&PL_sv_undef);
 
 void
 cleanup(SV *force, SV *state, SV *closure)
   PPCODE:
+    PERL_UNUSED_VAR(force);
+    PERL_UNUSED_VAR(state);
+    PERL_UNUSED_VAR(closure);

@@ -33,7 +33,8 @@ GetOptions('help|?|h'	=> \my $help,
            "kmei2=f"	=> \$weight{MinEdgeIntersect2},
            "kpl=f"	=> \$weight{ParentLeft},
            "kmlv=f"	=> \$weight{MinLevelVariance},
-           ) || pod2usage(2);
+           ) || pod2usage(-message  => "(-help gives the list of options)",
+                          -existval => 2);
 pod2usage(1) if $help;
 pod2usage(-exitstatus => 0, -verbose => 2) if $man;
 if ($version) {
@@ -104,7 +105,7 @@ for (keys %weight) {
 }
 warn("No aesthetics specified, so you'll get random placement\n") unless $n;
 
-$aglo->all_coordinates(read_coordinates($coord_infile)) if 
+$aglo->all_coordinates(read_coordinates($coord_infile)) if
     defined $coord_infile;
 
 $monitor &&= Graph::Layout::Aesthetic::Monitor::GnuPlot->new();
@@ -144,7 +145,7 @@ __END__
 
 =head1 NAME
 
-gloss.pl - Using Getopt::Long and Pod::Usage
+gloss.pl - A commandline graph layout tool
 
 =head1 SYNOPSIS
 
@@ -155,7 +156,7 @@ gloss.pl [options] [file ...]
 B<gloss.pl> is a tool which does graph layout using the aglo (Aesthetic Graph
 Layout) method. The graph is read from the standard input or a file, layout is
 performed according to the aesthetic combination specified on the command line,
-and the resulting layout is printed on the standard  output.
+and the resulting layout is printed on standard output.
 
 There  is  a  facility  for monitoring the progress of the layout using
 L<gnuplot|gnuplot(1)>.
@@ -247,17 +248,26 @@ Prints the manual page and exits.
 
 =back
 
+=head1 EXAMPLE
+
+Input files for the examples are found in the ex/ directory in the 
+L<Graph::Layout::Aesthetic|Graph::Layout::Aesthetic> distribution.
+
+  gloss.pl -s -mr 0 -knr 1 -kmel 1 ex/t04.in
+  gloss.pl -s -mr 0 -knr 1 -kmel 1 -kner 1 -kmei2 6 ex/t12.in
+  gloss.pl -s -mr 1 -knr 1 -kmel 1 -d 3 ex/ell.in
+
 =head1 SEE ALSO
 
 L<http://www.cs.ucla.edu/~stott/aglo/>,
 L<Graph::Layout::Aesthetic>,
 L<Graph::Layout::Aesthetic::Force>,
-L<gnuplot|gnuplot(1)>,
-L<gloss|gloss(1)>
+L<gnuplot(1)>,
+L<gloss(1)>
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt>
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

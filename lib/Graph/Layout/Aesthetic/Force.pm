@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-# To load the force XS code as long 
+# To load the force XS code as long
 # (as I don't split them off in a separate module)
 use Graph::Layout::Aesthetic;
 
@@ -55,10 +55,13 @@ Graph::Layout::Aesthetic::Force - Base class for graph layout aesthetic forces
   }
 
   $force = some_new_force_object();
+  $force->register($name);
   $force->register;
 
-  $old_private_data = $force->_private_data(?$new_private_data?);
-  $old_user_data    = $force->user_data(   ?$new_user_data?);
+  $old_private_data = $force->_private_data;
+  $old_private_data = $force->_private_data($new_private_data);
+  $old_user_data    = $force->user_data;
+  $old_user_data    = $force->user_data($new_user_data);
 
 or
 
@@ -70,16 +73,17 @@ Graph::Layout::Aesthetic::Force is a base class for the aesthetic forces
 used by the L<Graph::Layout::Aesthetic|Graph::Layout::Aesthetic> package.
 Each force represents one aspect the graph should be optimized for, concepts
 like "Nodes should be not too close together" or "edges should not be too
-long". This works by passing the current configuration to the a function in the
-force module, which then returns a "force" for each node corresponding to
-how much it would like to move that node in that direction to improve the
-target aesthetic.
+long". This works by passing the current configuration to the
+L<aesth_gradient|"aesth_gradient"> function in the force module, which then
+returns a "force" for each node corresponding to how much it would like to
+move that node in that direction to improve the target aesthetic.
 
 The combination of all forces will then determine the direction and size of
 the step that's applied to all nodes. The step sizes get restricted by a scalar
 that's called the "temperature". Since initial step sizes can be big, they
 don't necessarily improve on the target aesthetics since a step can reach far
-beyond the minimum for an aesthetic in the given direction. But as the
+beyond the minimum for an aesthetic in the given direction (this is intentional
+so that a state will be able to escape from a local minimum). But as the
 temperature lowers and the steps get smaller, the steps will more and more tend
 to optimize the target aesthetic.
 
@@ -132,11 +136,11 @@ left or the right from the average position of all nodes of its own level).
 =back
 
 The main role of this module is to function as base class for particular forces
-that are written as L<XS|perlxs> extension modules. It however has a default
-DESTROY method that frees an assumed underlying C structure, so don't use
-this as a baseclass for pure perl modules. However, see 
-L<Graph::Layout::Aesthetic::Force::Perl|Graph::Layout::Aesthetic::Force::Perl> 
-for how to write forces in perl. On the other hand, if you want to write your 
+that are written as L<XS|perlxs> extension modules. It has a default DESTROY
+method that frees an assumed underlying C structure, so don't use this as a
+baseclass for pure perl modules. However, see
+L<Graph::Layout::Aesthetic::Force::Perl|Graph::Layout::Aesthetic::Force::Perl>
+for how to write forces in perl. On the other hand, if you want to write your
 own standalone force packages based on XS code, then you'll need to look at
 L<Graph::Layout::Aesthetic::Include|Graph::Layout::Aesthetic::Include> to
 get the right definitions of the C level datastructures.
@@ -172,7 +176,7 @@ L<aesth_setup|"aesth_setup">
 
 The actual workhorse of the aesthetic force. It will be passed the current
 state, the pointer returned by L<aesth_setup|"aesth_setup"> and a gradient
-pointer which is to be filled in with the aesthetic force. The gradient 
+pointer which is to be filled in with the aesthetic force. The gradient
 pointer is already initialized with zeros.
 
 =back
@@ -181,14 +185,16 @@ pointer is already initialized with zeros.
 
 =over
 
-=item X<register>$force->register(?$name?)
+=item X<register>$force->register
+
+=item $force->register($name)
 
 The Graph::Layout::Aesthetic::Force module holds a mapping from names
 to forces. This method registers such a force. The name will be $name, unless
-that is undefined, in which case it is determined by calling the L<name|"name">
-method on the given $force. The force corresponding to a given name can be 
-looked up using L<name2force|"name2force"> after this call. A given name can 
-only be registered once.
+that is undefined or not given, in which case it is determined by calling 
+the L<name|"name"> method on the given $force. The force corresponding to a 
+given name can be looked up using L<name2force|"name2force"> after this call. 
+A given name can only be registered once.
 
 =item X<name>$force->name
 
@@ -208,26 +214,26 @@ to load forces on demand.
 
 =item X<private_data>$old_private_data = $force->_private_data
 
-Every force object is associated with one scalar of private data (default 
-undef). This is perl data meant for the implementer of the a force class, 
-and should normally not be manipulated by the user (see 
+Every force object is associated with one scalar of private data (default
+undef). This is perl data meant for the implementer of a force class, and 
+should normally not be manipulated by the user (see
 L<user_data|"user_data"> for that).
 
 This method returns that private data.
 
-Don't confuse this with the closure data returned by 
+Don't confuse this with the closure data returned by
 L<aesth_setup|"aesth_setup">. That one is associated with a force/state
-combination and normally only exists as long as a certain force is associated 
+combination and normally only exists as long as a certain force is associated
 with a certain state, while this one is associated with the force itself.
 
 =item $old_private_data = $force->_private_data($new_private_data)
 
 Sets new private data, returns the old value.
 
-=item X<user_data>$old_user_data = $force->user_data(   ?$new_user_data?)
+=item X<user_data>$old_user_data = $force->user_data
 
-Every force object is associated with one scalar of user data (default 
-undef). This is perl data meant for the user of the a force class, 
+Every force object is associated with one scalar of user data (default
+undef). This is perl data meant for the enduser of a force class,
 and should normally not be manipulated inside the force class
 (see L<private_data|"private_data"> for that).
 
@@ -259,7 +265,7 @@ L<Graph::Layout::Aesthetic::Include>
 
 =head1 AUTHOR
 
-Ton Hospel, E<lt>Graph::Layout::Aesthetic@ton.iguana.beE<gt>
+Ton Hospel, E<lt>Graph-Layout-Aesthetic@ton.iguana.beE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
