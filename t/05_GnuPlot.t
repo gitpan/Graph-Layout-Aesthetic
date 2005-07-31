@@ -78,7 +78,8 @@ $aglo->add_force("MinEdgeLength");
     $have = "";
     my $monitor = Graph::Layout::Aesthetic::Monitor::GnuPlot->new;
     is($monitor->last_plot_time, undef, "No plots yet");
-    tail("set terminal X11
+    my $terminal = $^O eq "MSWin32" ? "windows" : "X11";
+    tail("set terminal $terminal
 set data style linespoints
 set offsets 0.1, 0.1, 0.1, 0.1
 set nokey
@@ -181,7 +182,7 @@ e
     my $aglo = Graph::Layout::Aesthetic->new($topo, 3);
     $aglo->all_coordinates([1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]);
     $monitor->plot($aglo);
-    tail(qr!set terminal X11
+    tail(qr!set terminal $terminal
 set data style linespoints
 set offsets 0.1, 0.1, 0.1, 0.1
 set nokey

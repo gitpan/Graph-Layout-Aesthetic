@@ -7,8 +7,8 @@ TODO:
 	  from a graph attribute, or from the pos/hold attribute size
 	  if array references or the already existing coordinates if hold is
 	  a string. Not sure if this is a good idea.
-        - Add magic tests (does it work at all ? No uneeded extra accesses ?)
-	- self-locking
+        - Add magic tests (does it work at all ? No unneeded extra accesses ?)
+	- self-locking ? Thread support ?
 	- generalize a way to efficiently put vertex attributes in a topology.
 	- MD5 of files in Include.pm and compare with inline value. 
 	  If they differ, protest (author should then increase version and MD5)
@@ -16,12 +16,15 @@ TODO:
 	  argument.
 	- If C-structures change, derived classes should notice and not load.
 
-0.10
+0.11  2005-07-31
+	- Updated windows gnuplot tests to use the right terminal type
+
+0.10  2005-07-28
 	- Updated for the new interface of Graph 0.50
 
 0.09  2005-07-28
 	- The windows frontent to gnuplot is called "pgnuplot"
-	- The default gnuplot terminaltype is "windows", not "X11"
+	- The default gnuplot terminaltype on windows is "windows", not "X11"
 	- Don't try to pass a geometry argument to gnuplot on windows.
 	- Start using PERL_NO_GET_CONTEXT, and properly propagate the 
 	  interpreter context everywhere.
