@@ -10,11 +10,14 @@ TODO:
         - Add magic tests (does it work at all ? No unneeded extra accesses ?)
 	- self-locking ? Thread support ?
 	- generalize a way to efficiently put vertex attributes in a topology.
-	- MD5 of files in Include.pm and compare with inline value. 
+	- MD5 of files in Include.pm and compare with inline value.
 	  If they differ, protest (author should then increase version and MD5)
 	- add_force should probably also take forces instead of names as
 	  argument.
 	- If C-structures change, derived classes should notice and not load.
+
+0.12  2005-11-30
+	- added a #define packWARN for older perls that don't have it yet.
 
 0.11  2005-07-31
 	- Updated windows gnuplot tests to use the right terminal type
@@ -26,12 +29,12 @@ TODO:
 	- The windows frontent to gnuplot is called "pgnuplot"
 	- The default gnuplot terminaltype on windows is "windows", not "X11"
 	- Don't try to pass a geometry argument to gnuplot on windows.
-	- Start using PERL_NO_GET_CONTEXT, and properly propagate the 
+	- Start using PERL_NO_GET_CONTEXT, and properly propagate the
 	  interpreter context everywhere.
 	- Replaced :: by - in author email address (easier quoting for mailers)
 	- Replace object access by more paranoid versions.
 	- Updated Sample._xs to reflect current reality.
-	- Added dummy MODULE lines in the .xs files that don't have it (or 
+	- Added dummy MODULE lines in the .xs files that don't have it (or
 	  really need it). Some versions of xsubpp seem to insist on this.
 	- Minor documentation updates.
 
@@ -42,13 +45,13 @@ TODO:
 	- Removed some unused variables
 	- Rename the variable "rand" to something else. Some compilers dislike
 	  the conflict with rand().
-	- Call perl rand through the opcode table if the random generator is 
+	- Call perl rand through the opcode table if the random generator is
           uninitialized (might need a fake pad if someone uses this from XSUB)
 	- Remove inline, unportable. Use macros instead.
 	- fmin() is unused. min() and max() are very popular macro names and
 	  sometimes cause conflicts. Drop them.
 	- Tests should not depend on fileseparator (\ versus /)
-	- Don't use the OO interface to File::Temp, it's not yet in older 
+	- Don't use the OO interface to File::Temp, it's not yet in older
 	  perls.
 	- File::Temp tempfiles are seemingly opened in binmode. Do the tail
 	  in textmode in t/05_GnuPlot.t.

@@ -15,6 +15,11 @@ extern double drand48(void);
 #include "point.h"
 #include "at_node_level.h"
 
+/* Workaround for older perls without packWARN */
+#ifndef packWARN
+# define packWARN(a) (a)
+#endif
+
 /* Duplicate from perl source (since it's not exported unfortunately) */
 static bool my_isa_lookup(pTHX_ HV *stash, const char *name, HV* name_stash,
                           int len, int level) {
